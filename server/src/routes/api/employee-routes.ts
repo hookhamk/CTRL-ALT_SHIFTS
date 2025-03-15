@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // View schedule by week
-router.get('/week', async (req: Request, res: Response) => {
+router.get('/weekly', async (req: Request, res: Response) => {
     try {
         const { startDate, endDate } = req.query;
         const employee_id = req.employee.id;
@@ -37,7 +37,7 @@ router.get('/week', async (req: Request, res: Response) => {
 });
 
 // View schedule for the day
-router.get('/day', async (req: Request, res: Response) => {
+router.get('/daily', async (req: Request, res: Response) => {
     try {
       const { date } = req.query;
       const employee_id = req.employee.id;
