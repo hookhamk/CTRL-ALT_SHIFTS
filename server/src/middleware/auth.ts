@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models/user';
+import { Employee } from '../models/employee';  // Use Employee model instead of User
 import type { Request, Response, NextFunction } from 'express';
 
 declare module 'express-serve-static-core' {
@@ -9,7 +9,6 @@ declare module 'express-serve-static-core' {
       company_id: number;
       access_level: boolean;
     };
-    user?: JwtPayload;
   }
 }
 
@@ -30,26 +29,22 @@ export const authenticateToken = async (
     const token = authHeader.split(' ')[1];
 
     const secretKey = process.env.JWT_SECRET_KEY || '';
-    console.log('Secret Key:', secretKey); // Debug statement
 
     try {
       const decoded = jwt.verify(token, secretKey) as JwtPayload;
-      console.log('Decoded:', decoded);
 
-      const user = await User.findByPk(decoded.id);
-      console.log('User:', user);
-
-      if (!user) {
+      // Use Employee model to find the employee
+      const employee = await Employee.findById(decoded.id); // Assuming the id is linked to Employee
+      if (!employee) {
         return res.sendStatus(403); // Forbidden
       }
 
-      req.user = user as JwtPayload;
-      req.employee = { id: user.id, company_id: , access_level: user.access_level }; // Attach employee info
+      req.employee = { id: employee.id, company_id: employee.company_id, access_level: employee.access_level }; // Attach employee info
       return next();
     } catch (err) {
-      console.error('JWT verification error:', err); // Debug statement
-      return res.sendStatus(403);
-    } 
+      console.error('JWT verification error:', err);
+      return res.sendStatus(403); // Forbidden
+    }
   } else {
     res.sendStatus(401); // Unauthorized
   }

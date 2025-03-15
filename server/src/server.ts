@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import db from './config/connection';  // Importing your connection file
+import db from './config/connection.js' 
 
 dotenv.config();  // Load environment variables
 

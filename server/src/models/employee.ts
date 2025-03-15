@@ -22,17 +22,19 @@ const employeeSchema = new Schema<EmployeeDocument>({
     access_level: { type: Boolean, required: true }
 });
 
+employeeSchema.virtual('employer', {
+  ref: 'Employer',
+  localField: 'company_id',
+  foreignField: 'id',
+  justOne: true
+});
+
 const Employee = model<EmployeeDocument>('Employee', employeeSchema);
 export { Employee, EmployeeDocument };
 
-// Function to define associations AFTER both models are imported
-export const associateEmployee = async () => {
-  const { Employer } = await import('./employer.js');
+// // Function to define associations AFTER both models are imported
+// export const associateEmployee = async () => {
+//   const { Employer } = await import('./employer');
+// }
 
-employeeSchema.virtual('employer', {
-    ref: 'Employer',
-    localField: 'company_id',
-    foreignField: 'id',
-    justOne: true
-  });
-}
+
