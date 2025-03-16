@@ -20,7 +20,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function EECal() {
+export default function ViewDailyCal() {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
 
