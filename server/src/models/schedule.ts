@@ -11,13 +11,37 @@ interface ISchedule extends Document {
 }
 
 const ScheduleSchema = new Schema<ISchedule>({
-  job_id: { type: Number, required: true },
-  job_title: { type: String, required: true, trim: true },
-  employee_id: { type: Number, required: true, trim: true },
-  employee_name: { type: String, required: true, trim: true },
-  date: { type: Date, required: true },
-  start_time: { type: Date, required: true },
-  end_time: { type: Date, required: true },
+  job_id: { 
+    type: Number, 
+    required: true
+   },
+  job_title: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+  employee_id: { 
+    type: Number, 
+    required: true, 
+    trim: true 
+  },
+  employee_name: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+  date: { 
+    type: Date, 
+    required: true 
+  },
+  start_time: { 
+    type: Date, 
+    required: true 
+  },
+  end_time: { 
+    type: Date, 
+    required: true 
+  },
 });
 
 const Schedule = mongoose.model<ISchedule>('Schedule', ScheduleSchema);
