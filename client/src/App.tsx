@@ -4,8 +4,8 @@
 
 import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import EmployeeNavbar from './components/layout/EmployeeNavbar'
-import EmployerNavbar from './components/layout/EmployerNavbar'
+import EmployeeNavbar from './components/layout/employee_nav'
+import EmployerNavbar from './components/layout/employer_nav'
 import Footer from './components/layout/footer'
 import './App.css'
 

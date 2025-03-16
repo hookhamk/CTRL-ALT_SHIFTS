@@ -11,7 +11,7 @@ import Home from './pages/Home.tsx';
 import Login from './pages/Login.tsx';
 import About from './pages/About.tsx';
 import Employer from './pages/Employer/Employer.tsx';
-import Employee from './pages/Employee/Employee.tsx';
+import Daily from './pages/Employee/Daily.tsx';
 import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
@@ -37,34 +37,30 @@ const router = createBrowserRouter([
         element: <About />
       },
       {
-        path: `/${company_id}`,
+        path: '/:company_id',
         element: <Employer />,
         children: [
           {
-            path: '/schedule',
-            element: <Schedule />
+            path: 'schedule',
+            element: <Schedule />,
           },
           {
-            path: '/employees',
-            element: <Employees />
+            path: 'employees',
+            element: <Employees />,
           },
           {
-            path: '/jobs',
-            element: <Jobs />
+            path: 'jobs',
+            element: <Jobs />,
           },
         ]
       },
       {
-        path: `/${employee_id}`,
-        element: <Employee />,
+        path: '/:compnay_id/:employee_id',
+        element: <Weekly />,
         children: [
           {
-            path: '/weekly',
-            element: <Weekly />
-          },
-          {
-            path: '/daily',
-            element: <Daily />
+            path: 'daily',
+            element: <Daily />,
           },
             ]
       },
