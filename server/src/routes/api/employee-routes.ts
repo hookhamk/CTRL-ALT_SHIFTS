@@ -40,22 +40,25 @@ router.get('/weekly', async (req: Request, res: Response) => {
 router.get('/daily', async (req: Request, res: Response) => {
     try {
       const { date } = req.query;
-      const employee_id = req.employee.id;
-  
+      
+      // Type assertion to tell TypeScript that req.employee will not be undefined
+      const employee_id = (req.employee as { id: number }).id;
+
       // Set default value for date if not provided
       const currentDate = Data.getCurrentDate();
       const day = date ? new Date(date as string) : currentDate;
-  
+
       console.log(`Fetching schedule for employee: ${employee_id} for ${day}`);
-  
+
       // Fetch schedule from MongoDB
       const dbSchedule = await Data.dailySchedule(employee_id, day);
-  
+
       return res.json(dbSchedule);
-    } catch (err: any) {
+  } catch (err: any) {
       console.error('Error fetching schedule:', err);
       res.status(500).json({ message: 'Server Error', error: err.message });
-    }
-  });
+  }
+  return;
+});
 
 export { router as employeeRouter };
