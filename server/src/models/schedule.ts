@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface ISchedule extends Document {
+  schedule_id: number;
   job_id: number;
   job_title: string;
   employee_id: number;
@@ -11,6 +12,7 @@ interface ISchedule extends Document {
 }
 
 const ScheduleSchema = new Schema<ISchedule>({
+  schedule_id: { type: Number, required: true },
   job_id: { type: Number, required: true },
   job_title: { type: String, required: true, trim: true },
   employee_id: { type: Number, required: true, trim: true },
