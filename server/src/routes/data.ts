@@ -79,7 +79,7 @@ class Data {
         return updatedSchedule;
     }
 
-    validate = (req: Request, res: Response) => {
+    validate = (_req: Request, _res: Response) => {
             [
             body('schedules')
               .isArray({ min: 1 })
@@ -110,10 +110,11 @@ class Data {
               .withMessage('end_time must be a valid date-time (ISO 8601 format)'),
           ];
     
-            const errors = validationResult(req);
+            const errors = validationResult(_req);
             if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
+                return _res.status(400).json({ errors: errors.array() });
             }
+            return;
         }
 }
 

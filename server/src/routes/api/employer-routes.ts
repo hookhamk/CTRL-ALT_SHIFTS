@@ -35,6 +35,7 @@ router.get('schedule/week', async (req: Request, res: Response) => {
         console.error('Error fetching schedule:', err);
         res.status(500).json({ message: 'Server Error', error: err.message });
     }
+    return;
 });
 
 // View schedule for the day
@@ -56,6 +57,7 @@ router.get('schedule/day', async (req: Request, res: Response) => {
       console.error('Error fetching schedule:', err);
       res.status(500).json({ message: 'Server Error', error: err.message });
     }
+    return;
   });
 
 // create new schedule with multiple entries
@@ -97,6 +99,7 @@ router.put(`/schedule/${date}`), async (req: Request, res: Response) => {
         console.error('Error updating schedule:', err);
         res.status(500).json({ message: 'Server Error', error: err.message });
     }
+    return;
 }
 
 // get all jobs
@@ -115,7 +118,7 @@ router.put('/jobs/:job_id')
 router.delete('/jobs/:id')
 
 // get all employees
-router.get('/employees', async (req: Request, res: Response) => {
+router.get('/employees', async (_req: Request, res: Response) => {
     try {
         const employees = await Employee.find();
         res.json(employees);
