@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+//TO DO: confirm visiability of navbar toggle and that admin can switch back and forth
+//while an employee never sees the toggle option
+//TO DO: confirm how we are keeping track of the employee id - line 17
+
+import { useState, useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
+import EmployeeNavbar from './components/layout/EmployeeNavbar'
+import EmployerNavbar from './components/layout/EmployerNavbar'
+import Footer from './components/layout/footer'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
+  const hiddenNavbarRoutes = ["/login", "/", "/about"];
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      const employeeData = await fetch('/api/employee').then(res => res.json());
+    setIsAdmin(employeeData.isAdmin);
+  };
+
+  fetchEmployeeData();
+}, []);
+
+const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <header>
+      {toggleNavbar && (isAdmin ? <EmployerNavbar /> : <EmployeeNavbar />)}
+      </header>
+      <main>
+        <Outlet />
+      </main>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   )
 }
 
-export default App
+export default App;
