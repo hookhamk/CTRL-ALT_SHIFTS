@@ -10,30 +10,34 @@ router.use(authenticateToken);
 
 // View schedule by week
 router.get('/weekly', async (req: Request, res: Response) => {
-    try {
-        const { startDate, endDate } = req.query;
-        const employee_id = req.employee.id;
+  try {
+      if (!req.employee) {
+          return res.status(401).json({ message: 'Unauthorized: Employee data missing' });
+      }
 
-        // Set default values for startDate and endDate if not provided
-        const { firstDay, lastDay } = Data.getCurrentWeek();
-        const start = startDate ? new Date(startDate as string) : firstDay;
-        const end = endDate ? new Date(endDate as string) : lastDay;
+      const { startDate, endDate } = req.query;
+      const employee_id = req.employee.id;
 
-        console.log(`Fetching schedule for employee: ${employee_id} from ${startDate} to ${endDate}`);
+      // Set default values for startDate and endDate if not provided
+      const { firstDay, lastDay } = Data.getCurrentWeek();
+      const start = startDate ? new Date(startDate as string) : firstDay;
+      const end = endDate ? new Date(endDate as string) : lastDay;
 
-        // Ensure dates are provided
-        if (!startDate || !endDate) {
-            return res.status(400).json({ message: 'Start date and end date are required' });
-        }
+      console.log(`Fetching schedule for employee: ${employee_id} from ${startDate} to ${endDate}`);
 
-        // Fetch schedule from MongoDB
-        const dbSchedule = await Data.getSchedule(employee_id, start, end);
+      // Ensure dates are provided
+      if (!startDate || !endDate) {
+          return res.status(400).json({ message: 'Start date and end date are required' });
+      }
 
-        return res.json(dbSchedule);
-    } catch (err: any) {
-        console.error('Error fetching schedule:', err);
-        res.status(500).json({ message: 'Server Error', error: err.message });
-    }
+      // Fetch schedule from MongoDB
+      const dbSchedule = await Data.getSchedule(employee_id, start, end);
+
+      return res.json(dbSchedule);
+  } catch (err: any) {
+      console.error('Error fetching schedule:', err);
+      res.status(500).json({ message: 'Server Error', error: err.message });
+  }
 });
 
 // View schedule for the day

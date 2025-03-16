@@ -1,7 +1,7 @@
-import { Schema, model, type Document } from 'mongoose';
+import { Schema, model, type Document, Types } from 'mongoose';
 
 interface EmployeeDocument extends Document {
-  employee_id: number;
+  _id: Types.ObjectId;
   email: string;
   password: string;
   first_name: string;
@@ -12,8 +12,7 @@ interface EmployeeDocument extends Document {
 }
 
 const employeeSchema = new Schema<EmployeeDocument>({
-   employee_id: { type: Number, required: true },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
