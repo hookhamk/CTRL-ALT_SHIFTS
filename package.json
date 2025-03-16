@@ -1,6 +1,10 @@
 {
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.0.14",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.5.0",
     "tailwindcss": "^4.0.14"
   }
 }

@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface ISchedule extends Document {
+  schedule_id: number;
   job_id: number;
   job_title: string;
   employee_id: number;
