@@ -7,7 +7,7 @@ const Home = () => {
         <>
         <div className="grid min-h-full grid-cols-2 gap-4 grid-rows-[1fr_auto_1fr] bg-stone-200 lg:grid-cols-[max(50%,36rem)_1fr]">
             <header className="grid h-56 grid-cols-4 content-start gap-4  text-base/7 font-semibold text-gray-900">
-                <a href="#" className="m-3 flex items-end col-span-1">
+                <a href="/about" className="m-3 flex items-end col-span-1">
                     <img
                         alt="CTRL+ALT+SHIFTS Logo"
                         src={logo}
