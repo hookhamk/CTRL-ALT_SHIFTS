@@ -1,7 +1,7 @@
 //TO DO: Add in auth middleware to pull in id endpoints for employer and employee routes
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ReactDOM  from 'react-dom/client'
+import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
@@ -54,21 +54,20 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: '/:compnay_id/:employee_id',
+        path: '/:company_id/:employee_id', // Fixed typo in 'company_id' (was 'compnay_id')
         element: <Weekly />,
         children: [
           {
             path: 'daily',
             element: <Daily />,
           },
-            ]
+        ]
       },
     ]
   }
 ])
 
 const rootElement = document.getElementById('root');
-  if (rootElement) {
-    ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
-  }
-      
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
+}
