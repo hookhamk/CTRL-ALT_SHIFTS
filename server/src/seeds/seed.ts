@@ -67,7 +67,7 @@ const seedDatabase = async () => {
         last_name: 'Smith',
         job: 'CEO',
         company_id: 1001,
-        access_level: true // Admin
+        access_level: false
       },
       {
         email: 'alice.jones@example.com',
@@ -96,7 +96,7 @@ const seedDatabase = async () => {
         last_name: 'Johnson',
         job: 'Owner',
         company_id: 1002,
-        access_level: true
+        access_level: false
       },
       {
         email: 'dave.wilson@example.com',
@@ -125,7 +125,7 @@ const seedDatabase = async () => {
         last_name: 'Williams',
         job: 'Manager',
         company_id: 1003,
-        access_level: true 
+        access_level: false 
       },
       {
         email: 'lisa.davis@example.com',
