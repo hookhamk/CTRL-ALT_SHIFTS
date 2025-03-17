@@ -1,7 +1,7 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, type Document, Types } from 'mongoose';
 
 interface ISchedule extends Document {
-  schedule_id: number;
+  _id: Types.ObjectId
   job_id: number;
   job_title: string;
   employee_id: number;

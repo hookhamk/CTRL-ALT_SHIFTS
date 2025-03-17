@@ -1,101 +1,107 @@
 import { Employee } from '../models/employee';
 import { Employer } from '../models/employer';
+import { Schedule } from '../models/schedule';
 
-// Define resolvers for Employee and Employer models
 export const resolvers = {
   Query: {
-    // Fetch all employees
-    employees: async () => {
-      return await Employee.find();  
-    },
+    employees: async () => await Employee.find(),
+    employee: async (_: any, { id }: { id: string }) => await Employee.findById(id),
 
-    // Fetch a single employee by ID
-    employee: async (_: any, { id }: { id: string }) => {
-      return await Employee.findById(id);  
-    },
+    employers: async () => await Employer.find(),
+    employer: async (_: any, { id }: { id: string }) => await Employer.findById(id),
 
-    // Fetch all employers
-    employers: async () => {
-      return await Employer.find();  
-    },
-
-    // Fetch a single employer by ID
-    employer: async (_: any, { id }: { id: string }) => {
-      return await Employer.findById(id); 
-    },
+    schedules: async () => await Schedule.find(),
+    schedule: async (_: any, { id }: { id: string }) => await Schedule.findById(id),
   },
 
   Mutation: {
-    // Add a new employee
     addEmployee: async (
-      _: any, 
-      { email, first_name, last_name, job, company_id, access_level, password }: 
-      { email: string, first_name: string, last_name: string, job: string, company_id: number, access_level: boolean, password: string }
+      _: any,
+      { email, password, first_name, last_name, job, company_id, access_level }:
+      { email: string, password: string, first_name: string, last_name: string, job: string, company_id: number, access_level: boolean }
     ) => {
-      const newEmployee = new Employee({
-        email,
-        first_name,
-        last_name,
-        job,
-        company_id,
-        access_level,
-        password,
-      });
-
+      const newEmployee = new Employee({ email, password, first_name, last_name, job, company_id, access_level });
       await newEmployee.save();
       return newEmployee;
     },
 
-    // Add a new employer
     addEmployer: async (
-      _: any, 
-      { first_name, last_name, business_name, admin_id }: 
+      _: any,
+      { first_name, last_name, business_name, admin_id }:
       { first_name: string, last_name: string, business_name: string, admin_id: number }
     ) => {
-      const newEmployer = new Employer({
-        first_name,
-        last_name,
-        business_name,
-        admin_id,
-      });
-
+      const newEmployer = new Employer({ first_name, last_name, business_name, admin_id });
       await newEmployer.save();
       return newEmployer;
     },
 
-    // Update an existing employee
-    updateEmployee: async (
+    addSchedule: async (
       _: any,
-      { id, email, first_name, last_name, job, company_id, access_level, password }: 
-      { id: string, email?: string, first_name?: string, last_name?: string, job?: string, company_id?: number, access_level?: boolean, password?: string }
+      { job_id, job_title, employee_id, employee_name, date, start_time, end_time }:
+      { job_id: number, job_title: string, employee_id: number, employee_name: string, date: string, start_time: string, end_time: string }
     ) => {
-      const updatedEmployee = await Employee.findByIdAndUpdate(
-        id,
-        { email, first_name, last_name, job, company_id, access_level, password },
-        { new: true }
-      );
-      return updatedEmployee;
+      const newSchedule = new Schedule({ job_id, job_title, employee_id, employee_name, date, start_time, end_time });
+      await newSchedule.save();
+      return newSchedule;
     },
 
-    // Update an existing employer
+    updateEmployee: async (
+      _: any,
+      { id, email, first_name, last_name, job, company_id, access_level }:
+      { id: string, email?: string, first_name?: string, last_name?: string, job?: string, company_id?: number, access_level?: boolean }
+    ) => {
+      return await Employee.findByIdAndUpdate(
+        id,
+        { email, first_name, last_name, job, company_id, access_level },
+        { new: true }
+      );
+    },
+
     updateEmployer: async (
       _: any,
-      { id, first_name, last_name, business_name, admin_id }: 
+      { id, first_name, last_name, business_name, admin_id }:
       { id: string, first_name?: string, last_name?: string, business_name?: string, admin_id?: number }
     ) => {
-      const updatedEmployer = await Employer.findByIdAndUpdate(
+      return await Employer.findByIdAndUpdate(
         id,
         { first_name, last_name, business_name, admin_id },
         { new: true }
       );
-      return updatedEmployer;
+    },
+
+    updateSchedule: async (
+      _: any,
+      { id, job_id, job_title, employee_id, employee_name, date, start_time, end_time }:
+      { id: string, job_id?: number, job_title?: string, employee_id?: number, employee_name?: string, date?: string, start_time?: string, end_time?: string }
+    ) => {
+      return await Schedule.findByIdAndUpdate(
+        id,
+        { job_id, job_title, employee_id, employee_name, date, start_time, end_time },
+        { new: true }
+      );
+    },
+
+    deleteEmployee: async (_: any, { id }: { id: string }) => {
+      const result = await Employee.findByIdAndDelete(id);
+      return result !== null;
+    },
+
+    deleteEmployer: async (_: any, { id }: { id: string }) => {
+      const result = await Employer.findByIdAndDelete(id);
+      return result !== null;
+    },
+
+    deleteSchedule: async (_: any, { id }: { id: string }) => {
+      const result = await Schedule.findByIdAndDelete(id);
+      return result !== null;
     },
   },
 
-  // Employee Resolver to link employee to employer (based on company_id)
   Employee: {
-    employer: async (employee: any) => {
-      return await Employer.findById(employee.company_id);  
-    },
+    employer: async (employee: any) => await Employer.findById(employee.company_id),
+  },
+
+  Employer: {
+    employees: async (employer: any) => await Employee.find({ company_id: employer._id }),
   },
 };
