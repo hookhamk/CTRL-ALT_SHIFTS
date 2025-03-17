@@ -1,30 +1,83 @@
+
 import express from 'express';
 import dotenv from 'dotenv';
-import db from './config/connection.js' 
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';  
+import { Request, Response, NextFunction } from 'express';
+import db from './config/connection.js';
+import { typeDefs } from './schemas/typeDefs.js';
+import { resolvers } from './schemas/resolvers.js';
+import { authenticateToken } from './middleware/auth.js';
 
-dotenv.config();  // Load environment variables
+dotenv.config(); 
 
-const app = express();
+const startServer = async () => {
+  
+  const app = express();
 
-// Middleware to parse JSON
-app.use(express.json());
+  
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.json());
 
-// Connect to the database
-db().then(() => {
-  console.log('Successfully connected to MongoDB');
-}).catch((err) => {
-  console.error('Error connecting to MongoDB:', err);
-  process.exit(1);  // Exit if the connection fails
-});
+  
+  try {
+    await db();
+    console.log('✅ Successfully connected to MongoDB');
+  } catch (err) {
+    console.error('❌ Error connecting to MongoDB:', err);
+    process.exit(1);
+  }
 
-// Define routes
-app.get('/', (_req, res) => {
-  res.send('Hello, World!');
-});
+  
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
 
-// Define the port from environment variables or default to 5000
-const PORT = process.env.PORT || 3001;
+  
+  await server.start();
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+  const context = async ({ req }: { req: Request }) => {
+    try {
+      const user = await authenticateToken(req);  // Only pass req
+      return { user };  
+    } catch (err) {
+      return { user: null };
+    }
+  };
+  
+  app.use(
+    '/graphql',
+    expressMiddleware(server, { context }) // Pass correct context
+  );
+
+  
+  if (process.env.NODE_ENV === 'production') {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+
+    app.get('*', (_req: Request, res: Response) => {
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    });
+  }
+
+  
+  app.get('/', (_req, res) => {
+    res.send('✅ GraphQL API is running.');
+  });
+
+  
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 GraphQL available at http://localhost:${PORT}/graphql`);
+  });
+};
+
+
+startServer();
