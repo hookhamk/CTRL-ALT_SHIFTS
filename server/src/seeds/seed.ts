@@ -41,7 +41,9 @@ const seedDatabase = async () => {
         last_name: 'Smith',
         job: 'CEO',
         company_id: 1001,
-        access_level: true
+        access_level: true,
+        business_name: 'Smith Tech Solutions', 
+        admin_id: 1,
       },
       {
         email: 'sarah.johnson@example.com',
@@ -50,7 +52,9 @@ const seedDatabase = async () => {
         last_name: 'Johnson',
         job: 'Owner',
         company_id: 1002,
-        access_level: true
+        access_level: true,
+        business_name: 'Johnson Cafe',
+        admin_id: 2,
       },
       {
         email: 'michael.williams@example.com',
@@ -59,7 +63,9 @@ const seedDatabase = async () => {
         last_name: 'Williams',
         job: 'Manager',
         company_id: 1003,
-        access_level: true 
+        access_level: true,
+        business_name: 'Williams Retail', 
+        admin_id: 3,
       }
     ]);
 
@@ -69,15 +75,6 @@ const seedDatabase = async () => {
     // Create employees (users)
     const employees = await Employee.create([
       // Smith Tech Solutions employees
-      {
-        email: 'john.smith@example.com',
-        password: defaultPassword,
-        first_name: 'John',
-        last_name: 'Smith',
-        job: 'CEO',
-        company_id: 1001,
-        access_level: false
-      },
       {
         email: 'alice.jones@example.com',
         password: defaultPassword,
@@ -99,15 +96,6 @@ const seedDatabase = async () => {
       
       // Johnson Cafe employees
       {
-        email: 'sarah.johnson@example.com',
-        password: defaultPassword,
-        first_name: 'Sarah',
-        last_name: 'Johnson',
-        job: 'Owner',
-        company_id: 1002,
-        access_level: false
-      },
-      {
         email: 'dave.wilson@example.com',
         password: defaultPassword,
         first_name: 'Dave',
@@ -127,15 +115,6 @@ const seedDatabase = async () => {
       },
       
       // Williams Retail employees
-      {
-        email: 'michael.williams@example.com',
-        password: defaultPassword,
-        first_name: 'Michael',
-        last_name: 'Williams',
-        job: 'Manager',
-        company_id: 1003,
-        access_level: false 
-      },
       {
         email: 'lisa.davis@example.com',
         password: defaultPassword,
