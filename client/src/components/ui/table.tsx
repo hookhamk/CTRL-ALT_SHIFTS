@@ -1,7 +1,7 @@
 //TO DO: Add routes to database with needed documents - do we need to have the tablesData or adjust it to make this work?
 //TO DO: Correct issue with row loop
 
-import React from 'react'
+//import React from 'react'
 
 const tablesData = [
     {
@@ -35,9 +35,6 @@ const tablesData = [
         ]
     }];
 
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ')
-}
 
 export default function Table() {
     return (
@@ -71,12 +68,12 @@ export default function Table() {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white">
-                                        {table.rows.map((row, rowIndex) => (
+                                        {table.rows.map((_row, rowIndex) => (
                                             <tr key={rowIndex}>
-                                                {table.columns.map((column, columnIndex) => (
+                                                {table.columns.map((_column, columnIndex) => (
                                                     <td key={columnIndex}
-                                                        className="whitespace-nowrap border-b border-slate-200 px-6 py-4 text-sm text-slate-900"
-                                                    >  {row[column.toLowerCase()]}
+                                                        className="whitespace-nowrap border-b border-slate-200 px-6 py-4 text-sm text-slate-900">
+                                                     {/* {row[column.toLowerCase()]} */}
                                                     </td>
                                                 ))}
                                             </tr>

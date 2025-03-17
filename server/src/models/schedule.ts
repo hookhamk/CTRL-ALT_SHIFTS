@@ -23,4 +23,4 @@ const ScheduleSchema = new Schema<ISchedule>({
 });
 
 const Schedule = mongoose.model<ISchedule>('Schedule', ScheduleSchema);
-export { Schedule, ISchedule };
+export { Schedule };

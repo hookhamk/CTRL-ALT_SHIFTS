@@ -16,7 +16,6 @@ import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
 import Weekly from './pages/Employee/Weekly.tsx';
-import Daily from './pages/Employee/Daily.tsx';
 
 const router = createBrowserRouter([
   {
