@@ -2,10 +2,13 @@
 module.exports = {
     content: ["./client/**/*.html", "./client/**/*.js"],
     theme: {
-      extend: {
-        fontFamily: {
-          silkscreen: ['Silkscreen', 'cursive'],
-        },
+      colors: {
+        transparent: 'transparent',
+        current: '#62748e',
+        accent: '#7ed957',
+      },
+      fontFamily: {
+        silkscreen: ['Silkscreen', 'cursive'],
       },
     },
     plugins: [],

@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+//TO DO: confirm visiability of navbar toggle and that admin can switch back and forth
+//while an employee never sees the toggle option
+//TO DO: confirm how we are keeping track of the employee id - line 17
+
+import { useState, useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
+import EmployeeNavbar from './components/layout/employee_nav'
+import EmployerNavbar from './components/layout/employer_nav'
+import Footer from './components/layout/footer'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
+  const hiddenNavbarRoutes = ["/login", "/", "/about"];
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const response = await fetch('/api/employee');
+        if (response.ok) {
+          const employeeData = await response.json();
+          setIsAdmin(employeeData.isAdmin);
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+  fetchEmployeeData();
+}, []);
+
+const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <header>
+      {toggleNavbar && isLoggedIn && (isAdmin ? <EmployerNavbar /> : <EmployeeNavbar />)}
+      </header>
+      <main>
+        <Outlet />
+      </main>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   )
 }
 
-export default App
+export default App;
