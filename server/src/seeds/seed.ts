@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Employee, IEmployee } from '../models/employee.js';
+import { Employee, EmployeeDocument } from '../models/employee.js';
 import { Employer, IEmployer } from '../models/employer.js';
 import { Schedule, ISchedule } from '../models/schedule.js';
 import dotenv from 'dotenv';
