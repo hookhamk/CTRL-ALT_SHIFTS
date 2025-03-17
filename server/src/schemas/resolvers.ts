@@ -1,6 +1,6 @@
-import { Employee } from '../models/employee';
-import { Employer } from '../models/employer';
-import { Schedule } from '../models/schedule';
+import { Employee } from '../models/employee.js';
+import { Employer } from '../models/employer.js';
+import { Schedule } from '../models/schedule.js';
 
 export const resolvers = {
   Query: {
