@@ -153,20 +153,6 @@ export default function EmployerNavbar() {
                             href="#"
                             className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                         >
-                            Your Profile
-                        </DisclosureButton>
-                        <DisclosureButton
-                            as="a"
-                            href="#"
-                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                        >
-                            Settings
-                        </DisclosureButton>
-                        <DisclosureButton
-                            as="a"
-                            href="#"
-                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                        >
                             Sign out
                         </DisclosureButton>
                     </div>

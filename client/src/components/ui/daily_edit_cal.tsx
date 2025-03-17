@@ -10,19 +10,28 @@
 'use client';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from '@heroicons/react/20/solid'
-import { Schedule } from '../../../../server/src/models/schedule';
-// Confirm the path to the Schedule data for the client side
-// Figure out how to get company_id from the URL
-const { company_id } = req.params;
+//import { Schedule } from '../../../../server/src/models/schedule';
 
-function classNames(...classes) {
+
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function EditDailyCal() {
-  const [schedules, setSchedules] = useState([]);
+  interface Schedule {
+    schedule_id: string;
+    job_title: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    datetime: string;
+  }
+
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const { company_id } = useParams<{ company_id: string }>();
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -102,26 +111,26 @@ export default function EditDailyCal() {
                   className={classNames(
                     'py-1.5 hover:bg-gray-100 focus:z-10',
                     day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
-                    (day.isSelected || day.isToday) && 'font-semibold',
-                    day.isSelected && 'text-white',
-                    !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
-                    !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-400',
-                    day.isToday && !day.isSelected && 'text-indigo-600',
-                    dayIdx === 0 && 'rounded-tl-lg',
-                    dayIdx === 6 && 'rounded-tr-lg',
-                    dayIdx === days.length - 7 && 'rounded-bl-lg',
-                    dayIdx === days.length - 1 && 'rounded-br-lg',
+                    (day.isSelected || day.isToday) ? 'font-semibold' : '',
+                    day.isSelected ? 'text-white' : '',
+                    !day.isSelected && day.isCurrentMonth && !day.isToday ? 'text-gray-900' : '',
+                    !day.isSelected && !day.isCurrentMonth && !day.isToday ? 'text-gray-400' : '',
+                    day.isToday && !day.isSelected ? 'text-indigo-600' : '',
+                    dayIdx === 0 ? 'rounded-tl-lg' : '',
+                    dayIdx === 6 ? 'rounded-tr-lg' : '',
+                    dayIdx === days.length - 7 ? 'rounded-bl-lg' : '',
+                    dayIdx === days.length - 1 ? 'rounded-br-lg' : '',
                   )}
                 >
                   <time
                     dateTime={day.date}
                     className={classNames(
                       'mx-auto flex size-7 items-center justify-center rounded-full',
-                      day.isSelected && day.isToday && 'bg-indigo-600',
-                      day.isSelected && !day.isToday && 'bg-gray-900',
+                      day.isSelected && day.isToday ? 'bg-indigo-600' : '',
+                      day.isSelected && !day.isToday ? 'bg-gray-900' : '',
                     )}
                   >
-                    {day.date.split('-').pop().replace(/^0/, '')}
+                    {day.date.split('-').pop()?.replace(/^0/, '')}
                   </time>
                 </button>
               ))}
