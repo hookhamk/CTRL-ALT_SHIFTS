@@ -39,7 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/:company_id',
-        element: (<AuthService.isAdmin><Employer /></AuthService.isAdmin> ),
+        element: <AdminRoute><Employer /></AdminRoute>,
         children: [
           {
             path: 'schedule',
