@@ -70,15 +70,6 @@ const seedDatabase = async () => {
     const employees = await Employee.create([
       // Smith Tech Solutions employees
       {
-        email: 'john.smith@example.com',
-        password: defaultPassword,
-        first_name: 'John',
-        last_name: 'Smith',
-        job: 'CEO',
-        company_id: 1001,
-        access_level: false
-      },
-      {
         email: 'alice.jones@example.com',
         password: defaultPassword,
         first_name: 'Alice',
@@ -99,15 +90,6 @@ const seedDatabase = async () => {
       
       // Johnson Cafe employees
       {
-        email: 'sarah.johnson@example.com',
-        password: defaultPassword,
-        first_name: 'Sarah',
-        last_name: 'Johnson',
-        job: 'Owner',
-        company_id: 1002,
-        access_level: false
-      },
-      {
         email: 'dave.wilson@example.com',
         password: defaultPassword,
         first_name: 'Dave',
@@ -127,15 +109,6 @@ const seedDatabase = async () => {
       },
       
       // Williams Retail employees
-      {
-        email: 'michael.williams@example.com',
-        password: defaultPassword,
-        first_name: 'Michael',
-        last_name: 'Williams',
-        job: 'Manager',
-        company_id: 1003,
-        access_level: false 
-      },
       {
         email: 'lisa.davis@example.com',
         password: defaultPassword,

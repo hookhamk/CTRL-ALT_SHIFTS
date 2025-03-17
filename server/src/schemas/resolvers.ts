@@ -1,6 +1,8 @@
 import { Employee } from '../models/employee.js';
 import { Employer } from '../models/employer.js';
 import { Schedule } from '../models/schedule.js';
+import { AuthenticationError } from 'apollo-server-express';
+import jwt from 'jsonwebtoken';
 
 export const resolvers = {
   Query: {
@@ -15,6 +17,38 @@ export const resolvers = {
   },
 
   Mutation: {
+    login: async (_: any, { email, password }: { email: string; password: string }) => {
+      // Find the employee by email (include password in the query)
+      const employee = await Employee.findOne({ email }).select('+password');
+      
+      if (!employee) {
+        throw new AuthenticationError('Invalid email or password');
+      }
+
+      // Use the comparePassword method we added to the model
+      const isValidPassword = await employee.comparePassword(password);
+      if (!isValidPassword) {
+        throw new AuthenticationError('Invalid email or password');
+      }
+
+      // Generate the JWT token with role information
+      const token = jwt.sign(
+        {
+          id: employee._id,
+          email: employee.email,
+          firstName: employee.first_name,
+          company_id: employee.company_id,
+          access_level: employee.access_level
+        },
+        process.env.JWT_SECRET_KEY || 'default_secret_key',
+        { expiresIn: '8h' }
+      );
+
+      // Return token and employee (without password)
+      const { password: _, ...employeeWithoutPassword } = employee.toObject();
+      return { token, employee: employeeWithoutPassword };
+    },
+
     addEmployee: async (
       _: any,
       { email, password, first_name, last_name, job, company_id, access_level }:

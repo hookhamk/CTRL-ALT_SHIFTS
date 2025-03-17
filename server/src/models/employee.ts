@@ -1,4 +1,5 @@
 import { Schema, model, type Document } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 interface EmployeeDocument extends Document {
   _id: Schema.Types.ObjectId;
@@ -9,6 +10,7 @@ interface EmployeeDocument extends Document {
   job: string;
   company_id: Schema.Types.ObjectId; // Use Schema.Types.ObjectId here
   access_level: boolean;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const employeeSchema = new Schema<EmployeeDocument>({
@@ -20,6 +22,10 @@ const employeeSchema = new Schema<EmployeeDocument>({
   company_id: { type: Schema.Types.ObjectId, ref: 'Employer', required: true }, // Use Schema.Types.ObjectId
   access_level: { type: Boolean, required: true }
 });
+
+employeeSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 // Virtual to populate employer
 employeeSchema.virtual('employer', {
