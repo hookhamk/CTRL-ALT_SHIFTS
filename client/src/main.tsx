@@ -17,6 +17,12 @@ import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
 import Weekly from './pages/Employee/Weekly.tsx';
 
+// Wrapper component to protect routes
+const AdminRoute = ({ element }) => {
+  const isAdmin = true; // Replace with actual admin check logic
+  return isAdmin ? element : <ErrorPage />;
+};
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -37,7 +43,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/:company_id',
-        element: <Employer />,
+        element: <AdminRoute element={<Employer />} />,
         children: [
           {
             path: 'schedule',
