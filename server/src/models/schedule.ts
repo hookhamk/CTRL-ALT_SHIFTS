@@ -47,3 +47,4 @@ const ScheduleSchema = new Schema<ISchedule>({
 
 const Schedule = model<ISchedule>('Schedule', ScheduleSchema);
 export { Schedule, ISchedule };
+
