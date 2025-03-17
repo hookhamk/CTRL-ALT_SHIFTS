@@ -6,7 +6,10 @@
     "rootDir": "./src",  // Ensure your source files are in the src directory
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true,  
+    "skipLibCheck": true,      
+    "forceConsistentCasingInFileNames": true 
   },
   "include": ["src/**/*"],  // This includes all TypeScript files in src
   "exclude": ["node_modules"]
