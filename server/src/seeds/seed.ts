@@ -30,32 +30,41 @@ const clearDatabase = async () => {
 const seedDatabase = async () => {
   try {
     await clearDatabase();
-
+    
     // Create employers (businesses with admins)
+    const defaultPassword = 'password123'
     const employers = await Employer.create([
       {
+        email: 'john.smith@example.com',
+        password: defaultPassword,
         first_name: 'John',
         last_name: 'Smith',
-        business_name: 'Smith Tech Solutions',
-        admin_id: 1001
+        job: 'CEO',
+        company_id: 1001,
+        access_level: true
       },
       {
+        email: 'sarah.johnson@example.com',
+        password: defaultPassword,
         first_name: 'Sarah',
         last_name: 'Johnson',
-        business_name: 'Johnson Cafe',
-        admin_id: 1002
+        job: 'Owner',
+        company_id: 1002,
+        access_level: true
       },
       {
+        email: 'michael.williams@example.com',
+        password: defaultPassword,
         first_name: 'Michael',
         last_name: 'Williams',
-        business_name: 'Williams Retail',
-        admin_id: 1003
+        job: 'Manager',
+        company_id: 1003,
+        access_level: true 
       }
     ]);
 
     console.log('Employers created:', employers.length);
 
-    const defaultPassword = 'password123'
 
     // Create employees (users)
     const employees = await Employee.create([
@@ -76,7 +85,7 @@ const seedDatabase = async () => {
         last_name: 'Jones',
         job: 'Software Developer',
         company_id: 1001,
-        access_level: false // Regular employee
+        access_level: false
       },
       {
         email: 'bob.miller@example.com',
