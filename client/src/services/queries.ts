@@ -6,13 +6,7 @@ export const GET_CURRENT_USER = gql`
       id
       name
       email
-      role
-      ... on Admin {
-        permissions
-      }
-      ... on Employee {
-        purchaseHistory
-      }
+      access
     }
   }
 `;

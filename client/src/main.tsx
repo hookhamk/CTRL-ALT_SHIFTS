@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import AuthService from './services/auth.tsx'
 
 // add pages for the routes
 import ErrorPage from './pages/ErrorPage.tsx';
@@ -17,11 +18,6 @@ import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
 import Weekly from './pages/Employee/Weekly.tsx';
 
-// Wrapper component to protect routes
-const AdminRoute = ({ element }) => {
-  const isAdmin = true; // Replace with actual admin check logic
-  return isAdmin ? element : <ErrorPage />;
-};
 
 const router = createBrowserRouter([
   {
@@ -43,7 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/:company_id',
-        element: <AdminRoute element={<Employer />} />,
+        element: (<AuthService.isAdmin><Employer /></AuthService.isAdmin> ),
         children: [
           {
             path: 'schedule',

@@ -1,16 +1,14 @@
-import { GET_CURRENT_USER } from "../graphql/queries";
+import { GET_CURRENT_USER } from "./queries";
 import { useQuery } from "@apollo/client";
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "Admin" | "Customer";
-  permissions?: string[];  // Only for Admins
-  purchaseHistory?: string[];  // Only for Customers
+  access: boolean;  
 }
 
-const getUserFromLocalStorage = (): User | null => {
+const getUserFromLocalStorage = (): User => {
   const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 };
@@ -30,9 +28,7 @@ export const useUserService = () => {
 
   return {
     user,
-    isAdmin: user?.role === "Admin",
-    isCustomer: user?.role === "Customer",
-    hasPermission: (permission: string) => user?.permissions?.includes(permission) ?? false,
+    isAdmin: user.access = true,
     loading,
     error,
   };
