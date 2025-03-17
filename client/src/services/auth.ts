@@ -2,8 +2,8 @@ import { type JwtPayload, jwtDecode } from 'jwt-decode';
 
 interface ExtendedJwt extends JwtPayload {
   data:{
-    username:string,
     email:string,
+    access:boolean,
     _id:string
   }
 };
@@ -18,9 +18,18 @@ class AuthService {
     return !!token && !this.isTokenExpired(token);
   }
 
-  isAdmin(token: string) {
+  isAdmin() {
+    const token = this.getToken();
+    if (!token) return false;
     const decoded = jwtDecode<ExtendedJwt>(token);
-    return decoded?.data.role === 'admin';
+    return decoded?.data.access === true;
+  }
+
+  getUserId() {
+    const token = this.getToken();
+    if (!token) return null;
+    const decoded = jwtDecode<ExtendedJwt>(token);
+    return decoded?.data._id;
   }
 
   isTokenExpired(token: string) {
@@ -30,7 +39,7 @@ class AuthService {
       if (decoded?.exp && decoded?.exp < Date.now() / 1000) {
         return true;
       }
-    } catch (err) {
+    } catch {
       return false;
     }
   }

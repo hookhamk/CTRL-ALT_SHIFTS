@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import AuthService from './services/auth.tsx'
+import AdminRoute from './components/admin.tsx'
 
 // add pages for the routes
 import ErrorPage from './pages/ErrorPage.tsx';
@@ -17,7 +17,6 @@ import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
 import Weekly from './pages/Employee/Weekly.tsx';
-
 
 const router = createBrowserRouter([
   {
@@ -39,7 +38,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/:company_id',
-        element: <AdminRoute><Employer /></AdminRoute>,
+        element: (
+          <AdminRoute>
+            <Employer />
+          </AdminRoute>
+        ),
         children: [
           {
             path: 'schedule',
