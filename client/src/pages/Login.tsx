@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 function Login() {
     return (
       <>
-        <div className="bg-stone-200 flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="bg-stone-200 flex min-h-full min-w-screen flex-col justify-center px-6 py-12 lg:px-8">
           <div className="mx-auto flex flex-col items-center">
             <img
               alt="CTRL+ALT+SHIFTS"
