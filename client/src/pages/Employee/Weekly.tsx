@@ -1,9 +1,4 @@
 
-        //<h1>Weekly schedule</h1>
-       // <p>This page is the ee landing page. Weekly View holds a table</p>
-
-import e from "cors";
-
 interface Person {
   name: string;
   title: string;
@@ -98,6 +93,7 @@ export default function Weekly() {
                   </th>
                 </tr>
               </thead>
+              {/* mutations go here. Reformat for weekly schdule by employee */}
               <tbody>
                 {people.map((person, personIdx) => (
                   <tr key={person.email}>
