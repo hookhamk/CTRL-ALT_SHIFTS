@@ -1,10 +1,12 @@
 //TO DO: Add in path to pull employee name for welcome message
 import Form from '../../components/ui/newEmployee';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import Modal from '../../components/ui/modal';
 
+import { useState } from 'react';
+
 function Employer() {
+  const [open, setOpen] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const employee_name = user.first_name;
@@ -21,7 +23,7 @@ function Employer() {
             <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]">
               <div className="p-10 pt-4">
-                <button type="button" onClick={handleButtonClick} className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button type="button" className="bg-blue-500 text-white px-4 py-2 rounded">
                   Create Schedule
                 </button>
               </div>
@@ -33,7 +35,7 @@ function Employer() {
             <div className="absolute inset-px rounded-lg bg-white lg:rounded-tr-[2rem]" />
             <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-tr-[calc(2rem+1px)]">
               <div className="p-10 pt-4">
-                <Link to="#" onClick={handleButtonClick} className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
+                <Link to="#" className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
                   View Schedule
                 </Link>
               </div>
@@ -61,14 +63,14 @@ function Employer() {
             <Link to={`/${company_id}/jobs`} className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
               View Jobs
             </Link>
-          </div>
         </div>
         <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5" />
-        <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
-          <Form {...formProps} />
+        <Modal isOpen={open} onClose={() => setOpen(false)}>
+          <div></div>
         </Modal>
       </div>
     </div>
+  </div>
   );
 }
 
