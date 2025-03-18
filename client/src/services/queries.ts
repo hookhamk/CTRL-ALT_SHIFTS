@@ -105,3 +105,19 @@ export const GET_SCHEDULE = gql`
   }
 `;
 
+export const GET_TABLES = gql`
+  query GetTables($id: ID!) {
+    table(id: $id) {
+      id
+      title
+      description
+      fields {
+        id
+        label
+        type
+        placeholder
+        rows
+      }
+    }
+  }
+`;
