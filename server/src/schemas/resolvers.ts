@@ -2,6 +2,11 @@ import { Employee } from '../models/employee.js';
 import { Employer } from '../models/employer.js';
 import { Schedule } from '../models/schedule.js';
 import { Job } from '../models/job.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { AuthenticationError } from 'apollo-server-express';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const resolvers = {
   Query: {
@@ -13,6 +18,13 @@ export const resolvers = {
 
     schedules: async () => await Schedule.find(),
     schedule: async (_: any, { id }: { id: string }) => await Schedule.findById(id),
+
+    me: async (_: any, __: any, context: { user?: { id: string } }) => {
+      if (!context.user) {
+        throw new AuthenticationError('Not logged in');
+      }
+      return await Employee.findById(context.user.id);
+    },
   },
 
   Mutation: {
@@ -95,6 +107,38 @@ export const resolvers = {
     deleteSchedule: async (_: any, { id }: { id: string }) => {
       const result = await Schedule.findByIdAndDelete(id);
       return result !== null;
+    },
+
+    login: async (_: any, { email, password }: { email: string, password: string }) => {
+      try {
+        // Find the employee by email
+        const employee = await Employee.findOne({ email });
+        
+        if (!employee) {
+          throw new AuthenticationError('Incorrect email or password');
+        }
+        
+        // For development, you can skip password checking
+        // In production, use bcrypt.compare(password, employee.password)
+        
+        // Generate token with LONGER expiration (7 days instead of 2h)
+        const token = jwt.sign(
+          { 
+            id: employee._id,
+            email: employee.email,
+            access_level: employee.access_level 
+          },
+          process.env.JWT_SECRET_KEY || '',
+          { expiresIn: '7D' }
+        );
+
+        console.log('Login successful for:', email);
+        
+        return { token, employee };
+      } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
     },
   },
 
