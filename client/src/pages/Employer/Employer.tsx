@@ -1,5 +1,5 @@
 //TO DO: Add in path to pull employee name for welcome message
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 
@@ -71,6 +71,11 @@ function Employer() {
               </div>
               <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5" />
             </div>
+          </div>
+          
+          {/* This is where the child routes (Schedule, Employees, Jobs) will render */}
+          <div className="mt-12 bg-white p-6 rounded-lg shadow">
+            <Outlet />
           </div>
         </div>
       </div>
