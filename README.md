@@ -5,7 +5,7 @@ CTRL+ALT+SHIFTS
 
 🚀 Description
 
-What does yoWhat does this app do?
+What does this app do?
 Ctrl+Alt+Shifts is a smart workforce scheduling platform that allows employers to create, manage, and optimize employee shifts seamlessly. It features an interactive calendar, shift swapping, automated scheduling, and real-time updates using GraphQL.
 
 What problem does it solve?
@@ -14,13 +14,6 @@ Many businesses struggle with last-minute shift changes, scheduling conflicts, a
 Who is the target audience?
 Our platform is designed for businesses with shift-based employees, including retail, hospitality, healthcare, and service industries. It’s ideal for managers, HR professionals, and employees who need an easy, transparent way to handle work schedules.
 Ctrl+Alt+Shifts is a smart workforce scheduling platform that allows employers to create, manage, and optimize employee shifts seamlessly. It features an interactive calendar, shift swapping, automated scheduling, and real-time updates using GraphQL.
-
-What problem does it solve?
-Many businesses struggle with last-minute shift changes, scheduling conflicts, and inefficient workforce management. Our app eliminates these challenges by providing an intuitive scheduling system, reducing admin time, and ensuring teams stay organized.
-
-Who is the target audience?
-Our platform is designed for businesses with shift-based employees, including retail, hospitality, healthcare, and service industries. It’s ideal for managers, HR professionals, and employees who need an easy, transparent way to handle work schedules.
-
 
 🎯 Key Features **Update
 
