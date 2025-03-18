@@ -1,4 +1,32 @@
 import { gql } from '@apollo/client';
+export const ADD_JOB = gql`
+  mutation AddJob($title: String!, $description: String!, $company_id: Int!) {
+    addJob(title: $title, description: $description, company_id: $company_id) {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
+export const UPDATE_JOB = gql`
+  mutation UpdateJob($id: ID!, $title: String, $description: String, $company_id: Int) {
+    updateJob(id: $id, title: $title, description: $description, company_id: $company_id) {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
+export const DELETE_JOB = gql`
+  mutation DeleteJob($id: ID!) {
+    deleteJob(id: $id)
+  }
+`;
+
 
 // Authentication
 export const LOGIN = gql`
