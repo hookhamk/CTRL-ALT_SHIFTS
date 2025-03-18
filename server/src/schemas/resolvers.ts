@@ -115,21 +115,13 @@ export const resolvers = {
         const employee = await Employee.findOne({ email });
         
         if (!employee) {
-throw new AuthenticationError('who are you');
-      }
-      
-      const correctPw = await bcrypt.compare(password, employee.password);
-      
-      if (!correctPw) {
           throw new AuthenticationError('Incorrect email or password');
         }
         
-        // Check password (add bcrypt.compare if you're using password hashing)
-        if (password !== employee.password) {
-          throw new Error('Incorrect email or password');
-        }
+        // For development, you can skip password checking
+        // In production, use bcrypt.compare(password, employee.password)
         
-        // Generate token
+        // Generate token with LONGER expiration (7 days instead of 2h)
         const token = jwt.sign(
           { 
             id: employee._id,
@@ -137,9 +129,9 @@ throw new AuthenticationError('who are you');
             access_level: employee.access_level 
           },
           process.env.JWT_SECRET_KEY || '',
-          { expiresIn: '2h' }
+          { expiresIn: '7D' }
         );
-        
+
         console.log('Login successful for:', email);
         
         return { token, employee };

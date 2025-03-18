@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { LOGIN } from '../services/mutations';
-import AuthService from '../services/auth';
 import logo from '../assets/logo.png';
 
 export default function Login() {
@@ -16,6 +15,9 @@ export default function Login() {
     setLoginError('');
     
     try {
+      // Clear any existing token first
+      localStorage.removeItem('token');
+      
       console.log('Attempting login with:', formState);
       const { data } = await login({
         variables: { ...formState },
@@ -28,18 +30,14 @@ export default function Login() {
         return;
       }
 
-      // Store token and user info
-      AuthService.login(data.login.token);
+      // Store token
+      localStorage.setItem('token', data.login.token);
       
-      // Log the decoded token for debugging
-      console.log('Token info:', AuthService.getProfile());
-      
-      // Redirect based on user role
-      if (AuthService.isAdmin()) {
-        console.log('Admin login - redirecting to:', `/${data.login.employee.company_id}`);
+      // IMPORTANT: Don't use AuthService.login here which calls window.location.reload()
+      // Instead, navigate directly:
+      if (data.login.employee.access_level) {
         navigate(`/${data.login.employee.company_id}`);
       } else {
-        console.log('Employee login - redirecting to:', `/${data.login.employee.company_id}/${data.login.employee._id}`);
         navigate(`/${data.login.employee.company_id}/${data.login.employee._id}`);
       }
     } catch (err) {
