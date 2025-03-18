@@ -7,7 +7,7 @@ const Home = () => {
         <>
         <div className="grid min-h-full grid-cols-2 gap-4 grid-rows-[1fr_auto_1fr] bg-stone-200 lg:grid-cols-[max(50%,36rem)_1fr]">
             <header className="grid h-56 grid-cols-4 content-start gap-4  text-base/7 font-semibold text-gray-900">
-                <a href="#" className="m-3 flex items-end col-span-1">
+                <a href="/about" className="m-3 flex items-end col-span-1">
                     <img
                         alt="CTRL+ALT+SHIFTS Logo"
                         src={logo}
@@ -24,14 +24,14 @@ const Home = () => {
                     <p className="mt-6 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
                         With CTRL+ALT+SHIFTS, you can easily manage your employees' schedules and shifts. Sign up today to get started.
                     </p>
-                    <button
+                    <button onClick={() => window.location.href = '/about'}
                         type="button"
-                        className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base/8 font-medium rounded-md shadow-sm text-yellow-50 bg-slate-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500">
+                        className="cursor-pointer mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base/8 font-medium rounded-md shadow-sm text-yellow-50 bg-slate-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500">
                         Learn More</button>
                 </div>
                 <div>
                     <p className="mt-6 text-base/8 font-medium text-gray-500">Already have an account?</p>
-                    <button type="button" className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base/8 font-medium rounded-md shadow-sm text-white bg-stone-600 hover:bg-lime-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500">
+                    <button onClick={() => window.location.href = '/login'} type="button" className="cursor-pointer mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base/8 font-medium rounded-md shadow-sm text-white bg-stone-600 hover:bg-lime-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500">
                         Login</button>
                 </div>
             </main>

@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import { Employee, EmployeeDocument } from '../models/employee.js';
-import { Employer, IEmployer } from '../models/employer.js';
-import { Schedule, ISchedule } from '../models/schedule.js';
+import { Employee } from '../models/employee.js';
+import { Employer } from '../models/employer.js';
+import { Schedule } from '../models/schedule.js';
+import { Job } from '../models/job.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -35,46 +36,74 @@ const seedDatabase = async () => {
     const defaultPassword = 'password123'
     const employers = await Employer.create([
       {
+        company_id: 1001,
+        business_name: 'Smith Tech Solutions', 
+      },
+      {
+        company_id: 1002,
+        business_name: 'Johnson Cafe',
+      },
+      {
+        company_id: 1003,
+        business_name: 'Williams Retail', 
+      }
+    ]);
+
+    console.log('Employers created:', employers.length);
+
+    const jobs = await Job.create([
+      {
+        company_id: 1001,
+        job_title: 'CEO', 
+      },
+      {
+        company_id: 1001,
+        job_title: 'Software Developer', 
+      },
+      {
+        company_id: 1001,
+        job_title: 'UI Designer', 
+      },
+      {
+        company_id: 1002,
+        job_title: 'Owner', 
+      },
+      {
+        company_id: 1002,
+        job_title: 'Chef', 
+      },
+      {
+        company_id: 1002,
+        job_title: 'Barista', 
+      },
+      {
+        company_id: 1003,
+        job_title: 'Manager', 
+      },
+      {
+        company_id: 1003,
+        job_title: 'Sales Associate', 
+      },
+      {
+        company_id: 1003,
+        job_title: 'Cashier', 
+      }
+    ]);
+
+    console.log('Jobs created:', jobs.length);
+
+    // Create employees (users)
+    const employees = await Employee.create([
+      // Smith Tech Solutions employees
+      {
         email: 'john.smith@example.com',
         password: defaultPassword,
         first_name: 'John',
         last_name: 'Smith',
         job: 'CEO',
         company_id: 1001,
-        access_level: true,
-        business_name: 'Smith Tech Solutions', 
-        admin_id: 1,
+        access_level: true
       },
-      {
-        email: 'sarah.johnson@example.com',
-        password: defaultPassword,
-        first_name: 'Sarah',
-        last_name: 'Johnson',
-        job: 'Owner',
-        company_id: 1002,
-        access_level: true,
-        business_name: 'Johnson Cafe',
-        admin_id: 2,
-      },
-      {
-        email: 'michael.williams@example.com',
-        password: defaultPassword,
-        first_name: 'Michael',
-        last_name: 'Williams',
-        job: 'Manager',
-        company_id: 1003,
-        access_level: true,
-        business_name: 'Williams Retail', 
-        admin_id: 3,
-      }
-    ]);
-
-    console.log('Employers created:', employers.length);
-
-
-    // Create employees (users)
-    const employees = await Employee.create([
-      // Smith Tech Solutions employees
       {
         email: 'alice.jones@example.com',
         password: defaultPassword,
@@ -96,6 +125,15 @@ const seedDatabase = async () => {
       
       // Johnson Cafe employees
       {
+        email: 'sarah.johnson@example.com',
+        password: defaultPassword,
+        first_name: 'Sarah',
+        last_name: 'Johnson',
+        job: 'Owner',
+        company_id: 1002,
+        access_level: true
+      },
+      {
         email: 'dave.wilson@example.com',
         password: defaultPassword,
         first_name: 'Dave',
@@ -115,6 +153,15 @@ const seedDatabase = async () => {
       },
       
       // Williams Retail employees
+      {
+        email: 'michael.williams@example.com',
+        password: defaultPassword,
+        first_name: 'Michael',
+        last_name: 'Williams',
+        job: 'Manager',
+        company_id: 1003,
+        access_level: true
+      },
       {
         email: 'lisa.davis@example.com',
         password: defaultPassword,

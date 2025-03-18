@@ -1,14 +1,16 @@
+import logo from '../assets/logo.png';
+
 function Login() {
     return (
       <>
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="bg-stone-200 flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+          <div className="mx-auto flex flex-col items-center">
             <img
               alt="CTRL+ALT+SHIFTS"
-              src="../assets/logo.png"
-              className="mx-auto h-10 w-auto"
+              src={logo}
+              className="w-24 h-auto object-contain"
             />
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            <h2 className="mt-1 text-center text-2xl font-bold tracking-tight text-gray-900">
               Sign in to your account
             </h2>
           </div>
@@ -37,7 +39,7 @@ function Login() {
                     Password
                   </label>
                   <div className="text-sm">
-                    <a href="#" className="font-semibold text-lime-500 hover:text-slate-700">
+                    <a href="#" className="font-semibold text-slate-700 hover:text-cyan-500">
                       Forgot password?
                     </a>
                   </div>
@@ -57,7 +59,7 @@ function Login() {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-lime-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500"
+                  className="flex w-full justify-center rounded-md bg-slate-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500"
                 >
                   Sign in
                 </button>

@@ -1,7 +1,3 @@
-//TO DO: confirm visiability of navbar toggle and that admin can switch back and forth
-//while an employee never sees the toggle option
-//TO DO: confirm how we are keeping track of the employee id - line 17
-
 import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import EmployeeNavbar from './components/layout/employee_nav'

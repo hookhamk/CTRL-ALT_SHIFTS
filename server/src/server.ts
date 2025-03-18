@@ -1,4 +1,4 @@
-
+import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'node:path';
@@ -16,7 +16,7 @@ dotenv.config();
 const startServer = async () => {
   
   const app = express();
-
+  app.use(cors());
   
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
@@ -38,8 +38,6 @@ const startServer = async () => {
 
   
   await server.start();
-
-
   const context = async ({ req }: { req: Request }) => {
     try {
       const user = await authenticateToken(req);  // Only pass req
@@ -72,7 +70,7 @@ const startServer = async () => {
   });
 
   
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT || 4000;
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 GraphQL available at http://localhost:${PORT}/graphql`);
