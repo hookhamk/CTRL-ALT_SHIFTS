@@ -1,7 +1,14 @@
 import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
-  type Employee {
+ type Job {
+    _id: ID!
+    job_title: String!
+    company_id: Int!
+  }
+  
+
+type Employee {
     _id: ID!
     email: String!
     password: String!
