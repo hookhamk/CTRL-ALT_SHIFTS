@@ -1,10 +1,10 @@
-//TO DO: Add in auth middleware to pull in id endpoints for employer and employee routes
-
+import { ApolloProvider } from "@apollo/client";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import AdminRoute from './components/admin.tsx'
+import Client  from './components/client.tsx';
 
 // add pages for the routes
 import ErrorPage from './pages/ErrorPage.tsx';
@@ -28,9 +28,9 @@ const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
-      { 
-        path: '/login', 
-        element: <Login /> 
+      {
+        path: '/login',
+        element: <Login />
       },
       {
         path: '/about',
@@ -74,5 +74,9 @@ const router = createBrowserRouter([
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
+  ReactDOM.createRoot(rootElement).render(
+    <ApolloProvider client={Client()}>
+      <RouterProvider router={router} />
+    </ApolloProvider>
+  );
 }

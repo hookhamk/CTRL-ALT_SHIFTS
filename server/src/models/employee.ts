@@ -16,7 +16,7 @@ const employeeSchema = new Schema<EmployeeDocument>({
   password: { type: String, required: true },
   first_name: { type: String, required: true },
   last_name: { type: String, required: true },
-  job: { type: String, required: true },
+  job: { type: String, ref: 'Job', required: true },
   company_id: { type: Number, ref: 'Employer', required: true }, 
   access_level: { type: Boolean, required: true }
 });
@@ -26,6 +26,14 @@ employeeSchema.virtual('employer', {
   ref: 'Employer',
   localField: 'company_id',
   foreignField: '_id',
+  justOne: true
+});
+
+// Virtual to populate job
+employeeSchema.virtual('jobDetails', {
+  ref: 'Job',
+  localField: 'job',
+  foreignField: 'job_title',
   justOne: true
 });
 

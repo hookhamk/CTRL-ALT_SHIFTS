@@ -1,6 +1,7 @@
 import { Employee } from '../models/employee.js';
 import { Employer } from '../models/employer.js';
 import { Schedule } from '../models/schedule.js';
+import { Job } from '../models/job.js';
 
 export const resolvers = {
   Query: {
@@ -27,10 +28,10 @@ export const resolvers = {
 
     addEmployer: async (
       _: any,
-      { first_name, last_name, business_name, admin_id }:
-      { first_name: string, last_name: string, business_name: string, admin_id: number }
+      { business_name, company_id }:
+      {  business_name: string, company_id: number }
     ) => {
-      const newEmployer = new Employer({ first_name, last_name, business_name, admin_id });
+      const newEmployer = new Employer({ business_name, company_id });
       await newEmployer.save();
       return newEmployer;
     },
@@ -59,12 +60,12 @@ export const resolvers = {
 
     updateEmployer: async (
       _: any,
-      { id, first_name, last_name, business_name, admin_id }:
-      { id: string, first_name?: string, last_name?: string, business_name?: string, admin_id?: number }
+      { id, business_name, company_id }:
+      { id: string, business_name?: string, company_id?: number }
     ) => {
       return await Employer.findByIdAndUpdate(
         id,
-        { first_name, last_name, business_name, admin_id },
+        { business_name, company_id },
         { new: true }
       );
     },
@@ -102,6 +103,8 @@ export const resolvers = {
   },
 
   Employer: {
-    employees: async (employer: any) => await Employee.find({ company_id: employer._id }),
+    employees: async (employer: any) => {
+      return await Employee.find({ company_id: employer.company_id });
+    },
   },
 };

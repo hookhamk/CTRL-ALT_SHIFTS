@@ -15,11 +15,9 @@ const typeDefs = gql`
 
   type Employer {
     _id: ID!
-    first_name: String!
-    last_name: String!
     business_name: String!
-    admin_id: Int!
-    employees: [Employee]
+    company_id: Int!
+    employees: [Employee!]! 
   }
 
   type Schedule {
@@ -54,10 +52,8 @@ const typeDefs = gql`
     ): Employee
 
     addEmployer(
-      first_name: String!
-      last_name: String!
       business_name: String!
-      admin_id: Int!
+      company_id: Int!
     ): Employer
 
     addSchedule(
@@ -82,10 +78,8 @@ const typeDefs = gql`
 
     updateEmployer(
       id: ID!
-      first_name: String
-      last_name: String
       business_name: String
-      admin_id: Int
+      company_id: Int
     ): Employer
 
     updateSchedule(

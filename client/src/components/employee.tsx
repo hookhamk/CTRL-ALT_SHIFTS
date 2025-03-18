@@ -1,10 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import Client  from './client.tsx';
 
-const client = new ApolloClient({
-  uri: 'http://localhost:3001/graphql',
-  cache: new InMemoryCache()
-});
+const client = Client();
 
 const GET_EE = gql`
   query employee($id: ID!) {

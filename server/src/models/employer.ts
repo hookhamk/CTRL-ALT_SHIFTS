@@ -1,28 +1,20 @@
 import { Schema, model, type Document, Types  } from 'mongoose';
+import mongoose from 'mongoose';
 
 interface IEmployer extends Document {
     _id: Types.ObjectId;
-    first_name: string;
-    last_name: string;
+    company_id: number;
     business_name: string;
-    admin_id: number;
 }
 
 const employerSchema = new Schema<IEmployer> ({
-    first_name: {
-        type: String,
+    company_id: {
+        type: Number,
         required: true,
-    },
-    last_name: {
-        type: String,
-        required: true,
+        unique: true,
     },
     business_name: {
         type: String,
-        required: true,
-    },
-    admin_id: {
-        type: Number,
         required: true,
     }
 });
