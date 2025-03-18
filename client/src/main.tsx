@@ -17,6 +17,7 @@ import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
 import Weekly from './pages/Employee/Weekly.tsx';
+import Contact from './pages/Contact.tsx';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: '/about',
         element: <About />
+      },
+      {
+        path: '/contact',
+        element: <Contact />
       },
       {
         path: '/:company_id',
