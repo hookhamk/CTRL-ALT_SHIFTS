@@ -1,17 +1,10 @@
-import { useState } from 'react'
-import { Switch } from '@headlessui/react'
+
 import logo from '../../assets/logo.png';
 import auth from '../../services/auth';
 
-interface EmployeeNavbarProps {
-    isAdmin: boolean;
-}
-
-const EmployeeNavbar: React.FC<EmployeeNavbarProps> = ({ isAdmin }) => {
-    const [enabled, setEnabled] = useState(false);
-
+const EmployeeNavbar = () => {
     return (
-        <div className=" bg-slate-400 mx-auto sm:px-6 lg:px-8">
+        <div className=" bg-slate-400">
             <div className="flex h-30 items-center justify-between">
                 <div className="flex items-center">
                     <div className="shrink-0">
@@ -44,23 +37,6 @@ const EmployeeNavbar: React.FC<EmployeeNavbarProps> = ({ isAdmin }) => {
                     </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
-                    <div className="flex items-center">
-                        {isAdmin && (
-                        <div>
-                            <Switch
-                                checked={enabled}
-                                onChange={setEnabled}
-                                className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:outline-hidden data-checked:bg-lime-500"
-                            >
-                                <span className="sr-only">Access toggle</span>
-                                <span
-                                    aria-hidden="true"
-                                    className="pointer-events-none inline-block size-5 transform rounded-full bg-white ring-0 shadow-sm transition duration-200 ease-in-out group-data-checked:translate-x-5"
-                                />
-                            </Switch>
-                        </div>
-                        )}
-                    </div>
                 </div>
             </div>
         </div>
