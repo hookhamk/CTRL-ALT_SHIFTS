@@ -31,6 +31,11 @@ const typeDefs = gql`
     end_time: String!
   }
 
+  type Auth {
+    token: String!
+    employee: Employee
+  }
+
   type Query {
     employees: [Employee]
     employee(id: ID!): Employee
@@ -38,9 +43,12 @@ const typeDefs = gql`
     employer(id: ID!): Employer
     schedules: [Schedule]
     schedule(id: ID!): Schedule
+    me: Employee
   }
 
   type Mutation {
+    login(email: String!, password: String!): Auth
+
     addEmployee(
       email: String!
       password: String!
