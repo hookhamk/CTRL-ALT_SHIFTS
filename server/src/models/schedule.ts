@@ -1,10 +1,9 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
-interface ISchedule extends Document {
-  schedule_id: number;
+interface ISchedule {
   job_id: number;
   job_title: string;
-  employee_id: number;
+  employee_id: Types.ObjectId;
   employee_name: string;
   date: Date;
   start_time: Date;
@@ -12,15 +11,40 @@ interface ISchedule extends Document {
 }
 
 const ScheduleSchema = new Schema<ISchedule>({
-  schedule_id: { type: Number, required: true },
-  job_id: { type: Number, required: true },
-  job_title: { type: String, required: true, trim: true },
-  employee_id: { type: Number, required: true, trim: true },
-  employee_name: { type: String, required: true, trim: true },
-  date: { type: Date, required: true },
-  start_time: { type: Date, required: true },
-  end_time: { type: Date, required: true },
+  job_id: { 
+    type: Number, 
+    required: true
+   },
+  job_title: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+  employee_id: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Employee',
+    required: true, 
+    trim: true 
+  },
+  employee_name: { 
+    type: String, 
+    required: true, 
+    trim: true 
+  },
+  date: { 
+    type: Date, 
+    required: true 
+  },
+  start_time: { 
+    type: Date, 
+    required: true 
+  },
+  end_time: { 
+    type: Date, 
+    required: true 
+  },
 });
 
-const Schedule = mongoose.model<ISchedule>('Schedule', ScheduleSchema);
+const Schedule = model<ISchedule>('Schedule', ScheduleSchema);
 export { Schedule, ISchedule };
+

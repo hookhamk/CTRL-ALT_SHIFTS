@@ -1,6 +1,0 @@
-@import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen&display=swap');
-
-@theme {
-    --font-digital: 'Silkscreen', monospace;
-}

@@ -1,7 +1,7 @@
 import { Schema, model, type Document } from 'mongoose';
 
 interface EmployeeDocument extends Document {
-  employee_id: number;
+  _id: Schema.Types.ObjectId;
   email: string;
   password: string;
   first_name: string;
@@ -12,29 +12,22 @@ interface EmployeeDocument extends Document {
 }
 
 const employeeSchema = new Schema<EmployeeDocument>({
-   employee_id: { type: Number, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: true },
-    job: { type: String, required: true },
-    company_id: { type: Number, required: true },
-    access_level: { type: Boolean, required: true }
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  first_name: { type: String, required: true },
+  last_name: { type: String, required: true },
+  job: { type: String, required: true },
+  company_id: { type: Number, ref: 'Employer', required: true }, 
+  access_level: { type: Boolean, required: true }
 });
 
+// Virtual to populate employer
 employeeSchema.virtual('employer', {
   ref: 'Employer',
   localField: 'company_id',
-  foreignField: 'id',
+  foreignField: '_id',
   justOne: true
 });
 
 const Employee = model<EmployeeDocument>('Employee', employeeSchema);
 export { Employee, EmployeeDocument };
-
-// // Function to define associations AFTER both models are imported
-// export const associateEmployee = async () => {
-//   const { Employer } = await import('./employer');
-// }
-
-

@@ -1,16 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { Employee } from '../models/employee';  // Use Employee model instead of User
-import type { Request, Response, NextFunction } from 'express';
-
-declare module 'express-serve-static-core' {
-  interface Request {
-    employee?: {
-      id: number;
-      company_id: number;
-      access_level: boolean;
-    };
-  }
-}
+import { Employee } from '../models/employee.js';
+import type { Request } from 'express';
 
 interface JwtPayload {
   id: number;
@@ -18,34 +8,24 @@ interface JwtPayload {
   password: string;
 }
 
-export const authenticateToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticateToken = async (req: Request) => {
   const authHeader = req.headers.authorization;
+  if (!authHeader) return null; // No token, no access
 
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
+  const token = authHeader.split(' ')[1];
+  const secretKey = process.env.JWT_SECRET_KEY || '';
 
-    const secretKey = process.env.JWT_SECRET_KEY || '';
+  try {
+    const decoded = jwt.verify(token, secretKey) as JwtPayload;
 
-    try {
-      const decoded = jwt.verify(token, secretKey) as JwtPayload;
+    // Fetch the employee from the database
+    const employee = await Employee.findById(decoded.id);
+    if (!employee) return null;
 
-      // Use Employee model to find the employee
-      const employee = await Employee.findById(decoded.id); // Assuming the id is linked to Employee
-      if (!employee) {
-        return res.sendStatus(403); // Forbidden
-      }
-
-      req.employee = { id: employee.id, company_id: employee.company_id, access_level: employee.access_level }; // Attach employee info
-      return next();
-    } catch (err) {
-      console.error('JWT verification error:', err);
-      return res.sendStatus(403); // Forbidden
-    }
-  } else {
-    res.sendStatus(401); // Unauthorized
+    // Return the employee data instead of modifying req
+    return { id: employee.id, company_id: employee.company_id, access_level: employee.access_level };
+  } catch (err) {
+    console.error('JWT verification error:', err);
+    return null;
   }
 };
