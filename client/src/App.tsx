@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useQuery } from '@apollo/client';
 import { Outlet, useLocation } from 'react-router-dom'
 import EmployeeNavbar from './components/layout/employee_nav'
 import EmployerNavbar from './components/layout/employer_nav'
 import Footer from './components/layout/footer'
+import { GET_ME } from './services/queries';
 import './index.css';
 
 function App() {
@@ -11,25 +13,22 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const fetchEmployeeData = async () => {
-      try {
-        const response = await fetch('/api/employee');
-        if (response.ok) {
-          const employeeData = await response.json();
-          setIsAdmin(employeeData.isAdmin);
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error('Error fetching employee data:', error);
-        setIsLoggedIn(false);
-      }
-    };
+  const { data, loading, error } = useQuery(GET_ME);
 
-  fetchEmployeeData();
-}, []);
+  useEffect(() => {
+    if (loading) return;
+    if (error) {
+      console.error('Error fetching employee data:', error);
+      setIsLoggedIn(false);
+      return;
+    }
+    if (data && data.employee) {
+      setIsAdmin(data.employee.access_level);
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [data, loading, error]);
 
 const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
 

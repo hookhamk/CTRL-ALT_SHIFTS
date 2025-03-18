@@ -13,18 +13,19 @@ export default function Login() {
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginError('');
-    
+
     try {
       // Clear any existing token first
       localStorage.removeItem('token');
-      
+      localStorage.removeItem('user');
+
       console.log('Attempting login with:', formState);
       const { data } = await login({
         variables: { ...formState },
       });
 
       console.log('Login response:', data);
-      
+
       if (!data || !data.login || !data.login.token) {
         setLoginError('Invalid login response');
         return;
@@ -32,7 +33,17 @@ export default function Login() {
 
       // Store token
       localStorage.setItem('token', data.login.token);
-      
+
+      // Store user information
+      const userInfo = {
+        id: data.login.employee._id,
+        first_name: data.login.employee.first_name,
+        companyId: data.login.employee.company_id,
+        accessLevel: data.login.employee.access_level,
+      };
+      localStorage.setItem('user', JSON.stringify(userInfo));
+
+
       // IMPORTANT: Don't use AuthService.login here which calls window.location.reload()
       // Instead, navigate directly:
       if (data.login.employee.access_level) {
@@ -46,7 +57,7 @@ export default function Login() {
     }
   };
 
-    return (
+  return (
     <div className="bg-stone-200 flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="mx-auto flex flex-col items-center">
         <img
@@ -73,7 +84,7 @@ export default function Login() {
                 required
                 autoComplete="email"
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-lime-500 sm:text-sm/6"
-                onChange={(e) => setFormState({...formState, email: e.target.value})}
+                onChange={(e) => setFormState({ ...formState, email: e.target.value })}
               />
             </div>
           </div>
@@ -97,7 +108,7 @@ export default function Login() {
                 required
                 autoComplete="current-password"
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-lime-500 sm:text-sm/6"
-                onChange={(e) => setFormState({...formState, password: e.target.value})}
+                onChange={(e) => setFormState({ ...formState, password: e.target.value })}
               />
             </div>
           </div>
@@ -111,19 +122,19 @@ export default function Login() {
             </button>
           </div>
         </form>
-        
+
         {error && (
           <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             <p>GraphQL Error: {error.message}</p>
           </div>
         )}
-        
+
         {loginError && (
           <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             <p>{loginError}</p>
           </div>
         )}
-        
+
         {loading && (
           <div className="mt-4 text-center">
             <p>Loading...</p>

@@ -1,6 +1,10 @@
 //TO DO: Add in path to pull employee name for welcome message
+import Form from '../../components/ui/form';
 
 function Employer() {
+    const onSubmit = (data: any) => {
+        console.log(data);
+    };
     const employee_name = "Employer";
     return (
         <div className="bg-white py-24 sm:py-32">
@@ -13,9 +17,9 @@ function Employer() {
               <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]" />
               <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]">
                 <div className="p-10 pt-4">
-                    <button type="button"
+                    <button type="button" onClick={() => Form({title: 'title', description: 'description', fields: [name, job], onSubmit})}
                     className="rounded-md bg-lime-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                        <a href="/:company_id/schedule/new">Create Schedule</a>
+                        <a>Create Schedule</a>
                     </button>
                 </div>
               </div>
@@ -25,9 +29,9 @@ function Employer() {
               <div className="absolute inset-px rounded-lg bg-white lg:rounded-tr-[2rem]" />
               <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-tr-[calc(2rem+1px)]">
                 <div className="p-10 pt-4">
-                <button type="button"
+                <button type="button" onClick={() => window.location.href = '/:company_id/schedule'}
                     className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                        <a href="/:company_id/schedule">View Schedule</a>
+                        <a>View Schedule</a>
                     </button>
                 </div>
               </div>
@@ -37,9 +41,9 @@ function Employer() {
               <div className="absolute inset-px rounded-lg bg-white lg:rounded-bl-[2rem]" />
               <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
                 <div className="p-10 pt-4">
-                <button type="button"
+                <button type="button" onClick={() => window.location.href = '/:company_id/employees'}
                     className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                        <a href="/:company_id/employees">View Employees</a>
+                        <a>View Employees</a>
                     </button>
                 </div>
               </div>
@@ -49,9 +53,9 @@ function Employer() {
               <div className="absolute inset-px rounded-lg bg-white" />
               <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
                 <div className="p-10 pt-4">
-                <button type="button"
+                <button type="button" onClick={() => window.location.href = '/:company_id/jobs'}
                     className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                        <a href="/:company_id/jobs">View Jobs</a>
+                        <a>View Jobs</a>
                     </button>
                 </div>
               </div>
