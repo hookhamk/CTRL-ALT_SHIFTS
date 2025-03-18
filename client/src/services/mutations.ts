@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 // Authentication
 export const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
       employee {
@@ -20,24 +20,8 @@ export const LOGIN = gql`
 
 // Employee mutations
 export const ADD_EMPLOYEE = gql`
-  mutation AddEmployee(
-    $email: String!
-    $password: String!
-    $first_name: String!
-    $last_name: String!
-    $job: String!
-    $company_id: Int!
-    $access_level: Boolean!
-  ) {
-    addEmployee(
-      email: $email
-      password: $password
-      first_name: $first_name
-      last_name: $last_name
-      job: $job
-      company_id: $company_id
-      access_level: $access_level
-    ) {
+  mutation addEmployee($email: String!, $password: String!, $first_name: String!, $last_name: String!, $job: String!, $company_id: Int!, $access_level: Boolean!) {
+    addEmployee(email: $email, password: $password, first_name: $first_name, last_name: $last_name, job: $job, company_id: $company_id, access_level: $access_level) {
       _id
       email
       first_name
