@@ -1,6 +1,6 @@
 //TO DO: Add in path to pull employee name for welcome message
 import Form from '../../components/ui/form';
-import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 function Employer() {
@@ -35,7 +35,6 @@ function Employer() {
     });
     setShowForm(true);
   };
-
 
   return (
     <div className="bg-white py-24 sm:py-32">
@@ -96,11 +95,6 @@ function Employer() {
           </div>
         </div>
         <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5" />
-      </div>
-
-      {/* This is where the child routes (Schedule, Employees, Jobs) will render */}
-      <div className="mt-12 bg-white p-6 rounded-lg shadow">
-        <Outlet />
       </div>
     </div>
   );
