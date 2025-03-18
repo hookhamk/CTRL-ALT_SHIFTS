@@ -1,5 +1,27 @@
 import { gql } from "@apollo/client";
 
+export const GET_JOBS = gql`
+  query GetJobs {
+    jobs {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
+export const GET_JOB = gql`
+  query GetJob($id: ID!) {
+    job(id: $id) {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
 export const GET_ME = gql`
   query Me {
     me {

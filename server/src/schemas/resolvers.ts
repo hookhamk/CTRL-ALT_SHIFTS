@@ -28,6 +28,25 @@ export const resolvers = {
   },
 
   Mutation: {
+    addJob: async (_: any, { job_title, company_id }: { job_title: string, company_id: number }) => {
+      const newJob = new Job({ job_title, company_id });
+      await newJob.save();
+      return newJob;
+    },
+
+    updateJob: async (_: any, { id, job_title, company_id }: { id: string, job_title?: string, company_id?: number }) => {
+      return await Job.findByIdAndUpdate(
+        id,
+        { job_title, company_id },
+        { new: true }
+      );
+    },
+
+    deleteJob: async (_: any, { id }: { id: string }) => {
+      const result = await Job.findByIdAndDelete(id);
+      return result !== null;
+    },
+    
     addEmployee: async (
       _: any,
       { email, password, first_name, last_name, job, company_id, access_level }:
