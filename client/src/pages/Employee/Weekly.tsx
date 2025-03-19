@@ -1,20 +1,17 @@
 import { useQuery } from '@apollo/client';
 import { useEffect, useMemo } from 'react';
-import { GET_SCHEDULE } from "../../services/queries";
+import { GET_EMPLOYEE_SCHEDULES } from "../../services/queries";
 
+// Interface for schedule data
 interface Schedule {
-  id: number;
+  _id: string;
+  job_id: number;
   job_title: string;
-  day: string;
+  employee_id: string;
+  employee_name: string;
+  date: string;
   start_time: string;
   end_time: string;
-}
-
-interface Employee {
-  id: string;
-  first_name: string;
-  last_name: string;
-  schedule: Schedule[];
 }
 
 // Days order mapping
@@ -25,106 +22,170 @@ const daysOrder: Record<string, number> = {
   Thursday: 4,
   Friday: 5,
   Saturday: 6,
-  Sunday: 7,
+  Sunday: 0,
 };
 
 function Weekly() {
-  // Load user data once and memoize it
+  
+  // Get user from localStorage
   const user = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem('user') || '{}');
-    } catch {
+    } catch (e) {
+      console.error('Failed to parse user data', e);
       return {};
     }
   }, []);
+  
+  const employee_id = user.id;
+  const employee_name = user.first_name || 'Employee';
 
-  const employee_name = user?.first_name || "Employee";
-  const employee_id = user?.id ? String(user.id) : null;
-
-  // Fetch employee schedule
-  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
-    variables: { id: employee_id }, // ✅ Ensure correct variable name
-    skip: !employee_id, // ✅ Prevent query if employee_id is missing
+  // Fetch schedules data with employeeSchedules query
+  const { data, loading, error } = useQuery(GET_EMPLOYEE_SCHEDULES, {
+    variables: { employee_id },
+    skip: !employee_id,
   });
 
-  // Debugging logs
+  // Debug logging
   useEffect(() => {
-    console.log('Weekly component mounted');
-    console.log('Employee ID:', employee_id);
-  }, [employee_id]);
+    if (data) {
+      console.log("Raw schedule data:", data);
+    }
+  }, [data]);
 
+  // Process schedule data
   const groupedSchedule = useMemo(() => {
-    if (!data?.employee?.schedule) return {};
+    if (!data?.employeeSchedules || !Array.isArray(data.employeeSchedules)) {
+      console.log("No schedule data available");
+      return {};
+    }
 
-    const scheduleMap = data.employee.schedule.reduce<Record<string, Schedule[]>>((acc, shift) => {
-      if (!acc[shift.job_title]) acc[shift.job_title] = [];
-      acc[shift.job_title].push(shift);
-      return acc;
-    }, {});
-
-    // ✅ Sort each job's shifts by day order without mutating the original data
-    Object.keys(scheduleMap).forEach((job) => {
-      scheduleMap[job] = [...scheduleMap[job]].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+    const scheduleMap: Record<string, any[]> = {};
+    
+    // Process each schedule item
+    data.employeeSchedules.forEach((schedule: Schedule) => {
+      try {
+        // Parse the Unix timestamp (milliseconds) to a Date object
+        const parseTimestamp = (timestamp: string): Date => {
+          // First check if it's a large number (Unix timestamp)
+          const num = Number(timestamp);
+          if (!isNaN(num) && num > 1000000000000) {
+            return new Date(num); // It's a timestamp in milliseconds
+          }
+          // Otherwise treat as a normal date string
+          return new Date(timestamp);
+        };
+        
+        // Format date
+        const dateObj = parseTimestamp(schedule.date);
+        console.log("Parsed date:", schedule.date, "->", dateObj);
+        
+        if (isNaN(dateObj.getTime())) {
+          console.error("Invalid date:", schedule.date);
+          return; // Skip this schedule
+        }
+        
+        const day = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        // Format times
+        const formatTime = (timeStr: string) => {
+          try {
+            const timeObj = parseTimestamp(timeStr);
+            if (isNaN(timeObj.getTime())) {
+              return "Invalid time";
+            }
+            return timeObj.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            });
+          } catch (e) {
+            console.error("Error formatting time", e);
+            return timeStr;
+          }
+        };
+        
+        // Create processed schedule item
+        const processedSchedule = {
+          id: schedule._id,
+          job_title: schedule.job_title,
+          day,
+          start_time: formatTime(schedule.start_time),
+          end_time: formatTime(schedule.end_time)
+        };
+        
+        console.log("Processed schedule:", processedSchedule);
+        
+        // Add to schedule map by job title
+        if (!scheduleMap[schedule.job_title]) {
+          scheduleMap[schedule.job_title] = [];
+        }
+        
+        scheduleMap[schedule.job_title].push(processedSchedule);
+      } catch (e) {
+        console.error("Error processing schedule", e, schedule);
+      }
     });
-
+    
+    // Sort schedules by day
+    Object.keys(scheduleMap).forEach(job => {
+      scheduleMap[job].sort((a, b) => {
+        const dayA = daysOrder[a.day] || 0;
+        const dayB = daysOrder[b.day] || 0;
+        return dayA - dayB;
+      });
+    });
+    
     return scheduleMap;
   }, [data]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error?.message}</p>;
+  if (loading) return <p className="p-8">Loading your schedule...</p>;
+  if (error) return <p className="p-8 text-red-500">Error: {error.message}</p>;
 
   return (
     <div className="bg-stone-200 py-24 sm:py-32">
-      <header className="mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
-      </header>
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
-            <p className="mt-2 text-sm text-gray-700">Please see your weekly schedule below.</p>
-          </div>
-        </div>
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <header className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-900">Welcome {employee_name}!</h1>
+          <h2 className="text-xl font-medium text-gray-700 mt-2">Weekly Schedule</h2>
+        </header>
 
-        <div className="mt-8 flow-root">
-          <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle">
-              <table className="min-w-full border-separate border-spacing-0">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8">
-                      Job Assignment
-                    </th>
-                    {Object.keys(daysOrder).map((day) => (
-                      <th
-                        key={day}
-                        className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                      >
-                        {day}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {Object.entries(groupedSchedule).map(([jobTitle, shifts]) => (
-                    <tr key={jobTitle}>
-                      <td className="whitespace-nowrap py-4 px-3 text-sm font-semibold text-gray-900">
-                        {jobTitle}
-                      </td>
-                      {Object.keys(daysOrder).map((day) => {
-                        const shift = shifts.find((s) => s.day === day);
-                        return (
-                          <td key={day} className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                            {shift ? `${shift.start_time} - ${shift.end_time}` : '-'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {Object.keys(groupedSchedule).length === 0 ? (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="p-6 text-center text-gray-500">
+              No scheduled shifts found for this week.
             </div>
           </div>
-        </div>
+        ) : (
+          Object.entries(groupedSchedule).map(([jobTitle, schedules]) => (
+            <div key={jobTitle} className="mt-8 overflow-hidden bg-white shadow sm:rounded-lg">
+              <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-lg font-medium leading-6 text-gray-900">{jobTitle}</h3>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">Weekly schedule</p>
+              </div>
+              <div className="border-t border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {schedules.map((schedule) => (
+                      <tr key={schedule.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{schedule.day}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{schedule.start_time}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{schedule.end_time}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

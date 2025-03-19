@@ -117,7 +117,7 @@ export const ADD_SCHEDULE = gql`
   mutation AddSchedule(
     $job_id: Int!
     $job_title: String!
-    $employee_id: Int!
+    $employee_id: ID! 
     $employee_name: String!
     $date: String!
     $start_time: String!
@@ -149,7 +149,7 @@ export const UPDATE_SCHEDULE = gql`
     $id: ID!
     $job_id: Int
     $job_title: String
-    $employee_id: Int
+    $employee_id: ID
     $employee_name: String
     $date: String
     $start_time: String

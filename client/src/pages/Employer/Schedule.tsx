@@ -94,15 +94,15 @@ export default function Schedule() {
               </thead>
               {/* mutations go here. Reformat for weekly schdule by employee */}
               <tbody>
-                {schedule.map((schedule, scheduleIdx) => (
-                  <tr key={schedule.id}>
+                {schedule.map((item, scheduleIdx) => (
+                  <tr key={item.id}>
                     <td
                       className={classNames(
                         scheduleIdx !== schedule.length - 1 ? 'border-b border-gray-200' : '',
                         'py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8',
                       )}
                     >
-                      {schedule.employee_name}
+                      {item.employee_name}
                     </td>
                     <td
                       className={classNames(
@@ -110,7 +110,7 @@ export default function Schedule() {
                         'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell',
                       )}
                     >
-                      {schedule.job_title}
+                      {item.job_title}
                     </td>
                     <td
                       className={classNames(
@@ -118,7 +118,7 @@ export default function Schedule() {
                         'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 lg:table-cell',
                       )}
                     >
-                      {schedule.date}
+                      {item.date}
                     </td>
                     <td
                       className={classNames(
@@ -126,7 +126,7 @@ export default function Schedule() {
                         'px-3 py-4 text-sm whitespace-nowrap text-gray-500',
                       )}
                     >
-                      {schedule.start_time} - {schedule.end_time}
+                      {item.start_time} - {item.end_time}
                     </td>
                     </tr>
                 ))}

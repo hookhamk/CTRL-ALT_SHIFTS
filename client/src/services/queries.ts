@@ -68,6 +68,21 @@ export const GET_EMPLOYEE = gql`
   }
 `;
 
+export const GET_EMPLOYEE_SCHEDULES = gql`
+  query GetEmployeeSchedules($employee_id: ID) {
+    employeeSchedules(employee_id: $employee_id) {
+      _id
+      job_id
+      job_title
+      employee_id
+      employee_name
+      date
+      start_time
+      end_time
+    }
+  }
+`;
+
 // Employer queries
 export const GET_EMPLOYERS = gql`
   query GetEmployers {

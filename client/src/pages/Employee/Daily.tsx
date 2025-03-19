@@ -1,98 +1,259 @@
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useQuery } from '@apollo/client';
-import { useEffect, useMemo } from 'react';
-import { GET_SCHEDULE } from "../../services/queries";
+import { useState, useEffect, useMemo } from 'react';
+import { GET_EMPLOYEE_SCHEDULES } from "../../services/queries";
 
+// Utility function for className conditionals
+function classNames(...classes: (string | boolean)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
+// Updated interface to match our GraphQL schema
 interface Schedule {
-  id: number;
+  _id: string;
+  job_id: number;
   job_title: string;
-  day: string;
+  employee_id: string;
+  employee_name: string;
+  date: string;
   start_time: string;
   end_time: string;
 }
 
-interface Employee {
-  id: string;
-  first_name: string;
-  last_name: string;
-  schedule: Schedule[];
+// Day interface for calendar
+interface CalendarDay {
+  date: string;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  hasSchedule?: boolean;
 }
 
-// Days order mapping
-const daysOrder: Record<string, number> = {
-  Monday: 1,
-  Tuesday: 2,
-  Wednesday: 3,
-  Thursday: 4,
-  Friday: 5,
-  Saturday: 6,
-  Sunday: 7,
-};
-
 function Daily() {
+  // Calendar state
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   // Load user data once and memoize it
-  const user = useMemo(() => JSON.parse(localStorage.getItem('user') || '{}'), []);
-  const employee_name = user.first_name;
-  const employee_id = user.id;
-
-  // Fetch employee schedule
-  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
-    variables: { employee_id },
-  });
-
-  // Debugging logs
-  useEffect(() => {
-    console.log('Daily component mounted');
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch (e) {
+      console.error('Failed to parse user from localStorage', e);
+      return {};
+    }
   }, []);
 
-  const groupedSchedule = useMemo(() => {
-    if (!data?.employee) return {};
+  const employee_name = user.first_name || 'Employee';
+  const employee_id = user.id;
 
-    return data.employee.schedule.reduce<Record<string, Schedule[]>>((acc: Record<string, Schedule[]>, shift: Schedule) => {
-      if (!acc[shift.job_title]) {
-      acc[shift.job_title] = [];
-      }
-      acc[shift.job_title].push(shift);
-      return acc;
-    }, {});
-  }, [data]);
+  // Fetch employee schedules
+  const { data, loading, error } = useQuery(GET_EMPLOYEE_SCHEDULES, {
+    variables: { employee_id },
+    skip: !employee_id,
+    fetchPolicy: 'cache-and-network' // Changed from network-only for better performance
+  });
 
-  // Sort each job's shifts by day order
-  useMemo(() => {
-    Object.keys(groupedSchedule).forEach((job) => {
-      groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
-    });
-  }, [groupedSchedule]);
+  // Effect to select today's date initially
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setSelectedDate(today);
+  }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error?.message}</p>;
+  // Generate calendar days
+  const days = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    
+    // Calculate first and last day of month
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    
+    // Get day of week for first day (0 = Sunday, 1 = Monday, etc)
+    let firstDayOfWeek = firstDayOfMonth.getDay();
+    // Adjust for Monday as first day (0 = Monday)
+    firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 2;
+    
+    const daysInMonth = lastDayOfMonth.getDate();
+    const today = new Date().toISOString().split('T')[0];
+    
+    const calendarDays: CalendarDay[] = [];
+    
+    // Add days from previous month
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      const day = daysInPrevMonth - i;
+      const date = new Date(year, month - 1, day).toISOString().split('T')[0];
+      calendarDays.push({
+        date,
+        isCurrentMonth: false,
+        isToday: date === today,
+        isSelected: date === selectedDate
+      });
+    }
+    
+    // Add days from current month
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(year, month, i).toISOString().split('T')[0];
+      calendarDays.push({
+        date,
+        isCurrentMonth: true,
+        isToday: date === today,
+        isSelected: date === selectedDate
+      });
+    }
+    
+    // Add days from next month to fill out the grid
+    const remainingDays = 42 - calendarDays.length;
+    for (let i = 1; i <= remainingDays; i++) {
+      const date = new Date(year, month + 1, i).toISOString().split('T')[0];
+      calendarDays.push({
+        date,
+        isCurrentMonth: false,
+        isToday: date === today,
+        isSelected: date === selectedDate
+      });
+    }
+    
+    return calendarDays;
+  }, [currentMonth, selectedDate]);
+
+  // Safely parse date strings
+  const parseDate = (dateString: string): string => {
+    try {
+      // Handle ISO strings or date-only strings
+      return dateString.split('T')[0];
+    } catch (e) {
+      console.error('Error parsing date:', dateString, e);
+      return '';
+    }
+  };
+
+// Interface for formatted schedule data
+interface FormattedSchedule {
+  schedule_id: string;
+  job_title: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  datetime: string;
+}
+
+// Format schedules for display
+const schedulesData = useMemo<FormattedSchedule[]>(() => {
+  if (!data?.employeeSchedules || !Array.isArray(data.employeeSchedules)) return [];
+  
+  // Mark days that have schedules
+  days.forEach(day => {
+    day.hasSchedule = data.employeeSchedules.some(
+      (s: Schedule) => s.date.split('T')[0] === day.date
+    );
+  });
+    
+    // Filter schedules for the selected date
+    return data.employeeSchedules
+      .filter((s: Schedule) => parseDate(s.date) === selectedDate)
+      .map((schedule: Schedule) => {
+        // Format schedule data for display
+        let formattedDate = "Unknown date";
+        try {
+          const scheduleDate = new Date(schedule.date);
+          formattedDate = scheduleDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+          });
+        } catch (e) {
+          console.error('Error formatting date:', schedule.date, e);
+        }
+        
+        // Format times safely
+        const formatTime = (timeStr: string) => {
+          try {
+            // Handle both full ISO strings and time-only strings
+            const timeValue = timeStr.includes('T') ? timeStr : `2000-01-01T${timeStr}`;
+            const date = new Date(timeValue);
+            
+            if (isNaN(date.getTime())) {
+              return timeStr; // Fall back to original string if parsing fails
+            }
+            
+            return date.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            });
+          } catch (e) {
+            console.error('Error formatting time:', timeStr, e);
+            return timeStr; // Return original if parsing fails
+          }
+        };
+        
+        return {
+          schedule_id: schedule._id,
+          job_title: schedule.job_title || 'Unknown Job',
+          date: formattedDate,
+          start_time: formatTime(schedule.start_time),
+          end_time: formatTime(schedule.end_time),
+          datetime: schedule.date
+        };
+      });
+  }, [data, selectedDate, days]);
+
+  // Navigate months
+  const goToPreviousMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
+  };
+  
+  const goToNextMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1));
+  };
+
+  if (loading && !data) return <p className="p-8 text-center">Loading your schedule...</p>;
+  if (error) return <p className="p-8 text-center text-red-500">Error: {error.message}</p>;
+
+  // Calculate whether each day has a schedule
+  const daysWithSchedules = days.map(day => ({
+    ...day,
+    hasSchedule: data?.employeeSchedules?.some(
+      (s: Schedule) => parseDate(s.date) === day.date
+    )
+  }));
 
   return (
-    <div className="bg-stone-200 py-24 sm:py-32">
-      <header className="mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
-        Welcome {employee_name}!
+    <div className="bg-stone-200 py-8 px-4 sm:py-12 sm:px-6">
+      <header className="mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+          Welcome {employee_name}!
+        </h1>
+        <h2 className="text-base font-semibold text-gray-900 mt-2">Upcoming shifts</h2>
       </header>
-      <h2 className="text-base font-semibold text-gray-900">Upcoming shifts</h2>
-      <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
-        <div className="mt-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
-          <div className="flex items-center text-gray-900">
+
+      <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <div className="mt-6 text-center lg:col-span-5">
+          <div className="flex items-center justify-center text-gray-900 mb-4">
             <button
               type="button"
-              className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+              onClick={goToPreviousMonth}
+              className="-m-1.5 p-1.5 text-gray-400 hover:text-gray-500"
             >
               <span className="sr-only">Previous month</span>
-              <ChevronLeftIcon className="size-5" aria-hidden="true" />
+              <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
             </button>
-            <div className="flex-auto text-sm font-semibold">January</div>
+            <div className="flex-auto text-sm font-semibold mx-4">
+              {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
             <button
               type="button"
-              className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500"
+              onClick={goToNextMonth}
+              className="-m-1.5 p-1.5 text-gray-400 hover:text-gray-500"
             >
               <span className="sr-only">Next month</span>
-              <ChevronRightIcon className="size-5" aria-hidden="true" />
+              <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
-          <div className="mt-6 grid grid-cols-7 text-xs/6 text-gray-500">
+          
+          <div className="grid grid-cols-7 text-xs text-gray-500 mb-1">
             <div>M</div>
             <div>T</div>
             <div>W</div>
@@ -101,11 +262,13 @@ function Daily() {
             <div>S</div>
             <div>S</div>
           </div>
-          <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 text-sm ring-1 shadow-sm ring-gray-200">
-            {days.map((day, dayIdx) => (
+          
+          <div className="grid grid-cols-7 gap-px bg-gray-200 text-sm rounded-lg ring-1 ring-gray-200">
+            {daysWithSchedules.map((day, dayIdx) => (
               <button
                 key={day.date}
                 type="button"
+                onClick={() => setSelectedDate(day.date)}
                 className={classNames(
                   'py-1.5 hover:bg-gray-100 focus:z-10',
                   day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
@@ -116,16 +279,17 @@ function Daily() {
                   day.isToday && !day.isSelected ? 'text-indigo-600' : '',
                   dayIdx === 0 ? 'rounded-tl-lg' : '',
                   dayIdx === 6 ? 'rounded-tr-lg' : '',
-                  dayIdx === days.length - 7 ? 'rounded-bl-lg' : '',
-                  dayIdx === days.length - 1 ? 'rounded-br-lg' : '',
+                  dayIdx === daysWithSchedules.length - 7 ? 'rounded-bl-lg' : '',
+                  dayIdx === daysWithSchedules.length - 1 ? 'rounded-br-lg' : ''
                 )}
               >
                 <time
                   dateTime={day.date}
                   className={classNames(
-                    'mx-auto flex size-7 items-center justify-center rounded-full',
+                    'mx-auto flex h-7 w-7 items-center justify-center rounded-full',
                     day.isSelected && day.isToday && 'bg-indigo-600',
                     day.isSelected && !day.isToday && 'bg-gray-900',
+                    day.hasSchedule && !day.isSelected && 'bg-green-50 ring-1 ring-green-600'
                   )}
                 >
                   {day.date?.split('-').pop()?.replace(/^0/, '')}
@@ -133,33 +297,38 @@ function Daily() {
               </button>
             ))}
           </div>
-          <ol className="mt-4 divide-y divide-gray-100 text-sm/6 lg:col-span-7 xl:col-span-8">
-            {schedulesData.map((schedule: Schedule) => (
-              <li key={schedule.schedule_id} className="relative flex gap-x-6 py-6 xl:static">
-                <div className="flex-auto">
-                  <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">{schedule.job_title}</h3>
-                  <dl className="mt-2 flex flex-col text-gray-500 xl:flex-row">
-                    <div className="flex items-start gap-x-3">
-                      <dt className="mt-0.5">
-                        <span className="sr-only">Date</span>
-                        <CalendarIcon className="size-5 text-gray-400" aria-hidden="true" />
-                      </dt>
-                      <dd>
-                        <time dateTime={schedule.datetime}>
-                          {schedule.date} at {schedule.start_time} - {schedule.end_time}
-                        </time>
-                      </dd>
+        </div>
+        
+        <div className="mt-10 lg:mt-6 lg:col-span-7">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            {selectedDate ? 
+              <>Shifts for {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</> 
+              : 
+              <>Select a date to view shifts</>
+            }
+          </h3>
+          
+          <div className="bg-white shadow rounded-lg">
+            <ol className="divide-y divide-gray-100">
+              {schedulesData.length > 0 ? schedulesData.map((schedule) => (
+                <li key={schedule.schedule_id} className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <h4 className="text-base font-semibold text-gray-900">{schedule.job_title}</h4>
+                    <div className="mt-2 sm:mt-0 flex items-center text-sm text-gray-500">
+                      <CalendarIcon className="mr-1.5 h-5 w-5 text-gray-400" />
+                      <span>{schedule.start_time} - {schedule.end_time}</span>
                     </div>
-                  </dl>
-                </div>
-              </li>
-            ))}
-          </ol>
+                  </div>
+                </li>
+              )) : (
+                <li className="p-8 text-center text-gray-500">No shifts scheduled for this day</li>
+              )}
+            </ol>
+          </div>
         </div>
       </div>
     </div>
-  )
-
+  );
 }
 
 export default Daily;

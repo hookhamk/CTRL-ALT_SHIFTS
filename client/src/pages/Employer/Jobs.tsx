@@ -5,7 +5,7 @@ interface Job {
   employee_count: number;
 }
 
-const job: Job[] = [
+const jobs: Job[] = [
   { id: 1, job_title: 'Front-end Developer', employee_count: 4},
   // More people...
 ];
@@ -61,11 +61,11 @@ export default function Jobs() {
               </thead>
               {/* mutations go here. Reformat for weekly schdule by employee */}
               <tbody>
-                {job.map((job, jobIdx) => (
+                {jobs.map((job, jobIdx) => (
                   <tr key={job.id}>
                     <td
                       className={classNames(
-                        jobIdx !== job.length - 1 ? 'border-b border-gray-200' : '',
+                        jobIdx !== jobs.length - 1 ? 'border-b border-gray-200' : '',
                         'py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8',
                       )}
                     >
@@ -73,7 +73,7 @@ export default function Jobs() {
                     </td>
                     <td
                       className={classNames(
-                        jobIdx !== job.length - 1 ? 'border-b border-gray-200' : '',
+                        jobIdx !== jobs.length - 1 ? 'border-b border-gray-200' : '',
                         'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell',
                       )}
                     >
@@ -81,7 +81,7 @@ export default function Jobs() {
                     </td>
                     <td
                       className={classNames(
-                        jobIdx !== job.length - 1 ? 'border-b border-gray-200' : '',
+                        jobIdx !== jobs.length - 1 ? 'border-b border-gray-200' : '',
                         'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 lg:table-cell',
                       )}
                     >
