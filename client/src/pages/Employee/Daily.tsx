@@ -71,8 +71,7 @@ function Daily() {
     
     // Get day of week for first day (0 = Sunday, 1 = Monday, etc)
     let firstDayOfWeek = firstDayOfMonth.getDay();
-    // Adjust for Monday as first day (0 = Monday)
-    firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 2;
+
     
     const daysInMonth = lastDayOfMonth.getDate();
     const today = new Date().toISOString().split('T')[0];
@@ -81,9 +80,13 @@ function Daily() {
     
     // Add days from previous month
     const daysInPrevMonth = new Date(year, month, 0).getDate();
-    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-      const day = daysInPrevMonth - i;
-      const date = new Date(year, month - 1, day).toISOString().split('T')[0];
+    for (let i = firstDayOfWeek; i > 0; i--) {
+      const day = daysInPrevMonth - i + 1;
+      
+      // Use local date strings instead of ISO strings
+      const prevDate = new Date(year, month - 1, day);
+      const date = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}-${String(prevDate.getDate()).padStart(2, '0')}`;
+      
       calendarDays.push({
         date,
         isCurrentMonth: false,
@@ -118,10 +121,33 @@ function Daily() {
     return calendarDays;
   }, [currentMonth, selectedDate]);
 
-  // Safely parse date strings
+  // Safely parse date strings with timezone compensation
   const parseDate = (dateString: string): string => {
     try {
-      // Handle ISO strings or date-only strings
+      // Check if it's a numeric timestamp
+      const timestamp = Number(dateString);
+      if (!isNaN(timestamp) && timestamp > 1000000000000) {
+        // It's a Unix timestamp in milliseconds, convert to date string
+        const date = new Date(timestamp);
+        
+        // Create date using local timezone to avoid UTC conversion issues
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+      }
+      
+      // Otherwise handle ISO strings or date-only strings
+      if (dateString.includes('T')) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+      }
+      
       return dateString.split('T')[0];
     } catch (e) {
       console.error('Error parsing date:', dateString, e);
@@ -200,6 +226,27 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
       });
   }, [data, selectedDate, days]);
 
+  // Format a date string for display without timezone issues
+  const formatDateString = (dateStr: string): string => {
+    try {
+      // Parse the date string parts directly to avoid timezone conversion
+      const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10));
+      
+      // Create a date object using local components
+      const date = new Date(year, month - 1, day);
+      
+      // Format the date for display
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } catch (e) {
+      console.error('Error formatting date string:', dateStr, e);
+      return dateStr; // Fallback to the original string
+    }
+  };
+
   // Navigate months
   const goToPreviousMonth = () => {
     setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
@@ -254,12 +301,12 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
           </div>
           
           <div className="grid grid-cols-7 text-xs text-gray-500 mb-1">
+            <div>S</div>
             <div>M</div>
             <div>T</div>
             <div>W</div>
             <div>T</div>
             <div>F</div>
-            <div>S</div>
             <div>S</div>
           </div>
           
@@ -301,11 +348,11 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
         
         <div className="mt-10 lg:mt-6 lg:col-span-7">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            {selectedDate ? 
-              <>Shifts for {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</> 
-              : 
+            {selectedDate ? (
+              <>Shifts for {formatDateString(selectedDate)}</>
+            ) : (
               <>Select a date to view shifts</>
-            }
+            )}
           </h3>
           
           <div className="bg-white shadow rounded-lg">
