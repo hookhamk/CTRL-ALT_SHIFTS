@@ -197,8 +197,8 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
         const formatTime = (timeStr: string) => {
           try {
             // Handle both full ISO strings and time-only strings
-            const timeValue = timeStr.includes('T') ? timeStr : `2000-01-01T${timeStr}`;
-            const date = new Date(timeValue);
+            const timestamp = Number(timeStr);
+            const date = new Date(timestamp);
             
             if (isNaN(date.getTime())) {
               return timeStr; // Fall back to original string if parsing fails
