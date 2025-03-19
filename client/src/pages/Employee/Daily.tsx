@@ -1,4 +1,3 @@
-
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useQuery } from '@apollo/client';
 import { useEffect, useMemo } from 'react';
