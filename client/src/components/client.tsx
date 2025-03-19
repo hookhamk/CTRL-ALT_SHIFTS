@@ -4,7 +4,7 @@ import { setContext } from '@apollo/client/link/context';
 const Client = () => {
   // Create the HTTP link
   const httpLink = createHttpLink({
-    uri: 'http://localhost:3001/graphql', // Make sure this matches your server port
+    uri: '/graphql', // Make sure this matches your server port
   });
 
   // Auth link for JWT
