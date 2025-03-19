@@ -38,7 +38,6 @@ function Weekly() {
   }, []);
   
   const employee_id = user.id;
-  const employee_name = user.first_name || 'Employee';
 
   // Fetch schedules data with employeeSchedules query
   const { data, loading, error } = useQuery(GET_EMPLOYEE_SCHEDULES, {

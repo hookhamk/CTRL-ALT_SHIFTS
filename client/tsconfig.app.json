@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "../../../scratch-pad/daily_edit_cal.tsx", "../../../scratch-pad/daily_view_cal.tsx"]
+  "include": ["src"]
 }
