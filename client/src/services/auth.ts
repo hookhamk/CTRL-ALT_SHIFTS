@@ -58,6 +58,7 @@ class AuthService {
       const decoded = jwtDecode<TokenData>(token);
       return decoded.exp < Date.now() / 1000;
     } catch (err) {
+      console.error('Invalid token format', err);
       return true;
     }
   }

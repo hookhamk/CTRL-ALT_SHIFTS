@@ -25,7 +25,7 @@ const daysOrder: Record<string, number> = {
   Thursday: 4,
   Friday: 5,
   Saturday: 6,
-  Sunday: 7,
+  Sunday: 0,
 };
 
 function Weekly() {
@@ -38,7 +38,6 @@ function Weekly() {
     }
   }, []);
 
-  const employee_name = user?.first_name || "Employee";
   const employee_id = user?.id ? String(user.id) : null;
 
   // Fetch employee schedule
@@ -80,8 +79,7 @@ function Weekly() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
-            <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
-            <p className="mt-2 text-sm text-gray-700">Please see your weekly schedule below.</p>
+            <h1 className="text-base font-semibold text-gray-900">Weekly Schedule</h1>
           </div>
         </div>
 
