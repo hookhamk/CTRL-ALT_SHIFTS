@@ -1,23 +1,77 @@
+import { useQuery } from '@apollo/client';
+import { useEffect, useMemo } from 'react';
+import { GET_SCHEDULE } from "../../services/queries";
 
 interface Schedule {
   id: number;
-  employee_name: string;
   job_title: string;
-  date: string;
-  start_time: number;
-  end_time: number;
+  day: string;
+  start_time: string;
+  end_time: string;
 }
 
-const schedule: Schedule[] = [
-  { id: 123, employee_name: 'Lindsay Walton', job_title: 'Front-end Developer', date: 'Monday', start_time: 9, end_time: 17 },
-  // More scheudles...
-];
-
-function classNames(...classes: (string | boolean)[]): string {
-  return classes.filter(Boolean).join(' ');
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  schedule: Schedule[];
 }
+
+// Days order mapping
+const daysOrder: Record<string, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7,
+};
 
 export default function Schedule() {
+    // Load user data once and memoize it
+    const user = useMemo(() => {
+      try {
+        return JSON.parse(localStorage.getItem('user') || '{}');
+      } catch {
+        return {};
+      }
+    }, []);
+
+    const employee_id = user?.id ? String(user.id) : null;
+  
+    // Fetch employee schedule
+    const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
+      variables: { id: employee_id }, // ✅ Ensure correct variable name
+      skip: !employee_id, // ✅ Prevent query if employee_id is missing
+    });
+  
+    // Debugging logs
+    useEffect(() => {
+      console.log('Weekly component mounted');
+      console.log('Employee ID:', employee_id);
+    }, [employee_id]);
+  
+    const groupedSchedule = useMemo(() => {
+      if (!data?.employee?.schedule) return {};
+  
+      const scheduleMap = data.employee.schedule.reduce<Record<string, Schedule[]>>((acc, shift) => {
+        if (!acc[shift.job_title]) acc[shift.job_title] = [];
+        acc[shift.job_title].push(shift);
+        return acc;
+      }, {});
+  
+      // ✅ Sort each job's shifts by day order without mutating the original data
+      Object.keys(scheduleMap).forEach((job) => {
+        scheduleMap[job] = [...scheduleMap[job]].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+      });
+  
+      return scheduleMap;
+    }, [data]);
+  
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error?.message}</p>;
+  
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -42,94 +96,36 @@ export default function Schedule() {
             <table className="min-w-full border-separate border-spacing-0">
               <thead>
                 <tr>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8"
-                  >
-                    Job Assignment
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell"
-                  >
-                    Monday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter lg:table-cell"
-                  >
-                    Tuesday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Wednesday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Thursday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Friday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Saturday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Sunday
-                  </th>
+                <th className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8">
+                      Job Assignment
+                    </th>
+                    {Object.keys(daysOrder).map((day) => (
+                      <th
+                        key={day}
+                        className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
+                      >
+                        {day}
+                      </th>
+                    ))}
                 </tr>
               </thead>
               {/* mutations go here. Reformat for weekly schdule by employee */}
               <tbody>
-                {schedule.map((item, scheduleIdx) => (
-                  <tr key={item.id}>
-                    <td
-                      className={classNames(
-                        scheduleIdx !== schedule.length - 1 ? 'border-b border-gray-200' : '',
-                        'py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8',
-                      )}
-                    >
-                      {item.employee_name}
-                    </td>
-                    <td
-                      className={classNames(
-                        scheduleIdx !== schedule.length - 1 ? 'border-b border-gray-200' : '',
-                        'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell',
-                      )}
-                    >
-                      {item.job_title}
-                    </td>
-                    <td
-                      className={classNames(
-                        scheduleIdx !== schedule.length - 1 ? 'border-b border-gray-200' : '',
-                        'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 lg:table-cell',
-                      )}
-                    >
-                      {item.date}
-                    </td>
-                    <td
-                      className={classNames(
-                        scheduleIdx !== schedule.length - 1 ? 'border-b border-gray-200' : '',
-                        'px-3 py-4 text-sm whitespace-nowrap text-gray-500',
-                      )}
-                    >
-                      {item.start_time} - {item.end_time}
-                    </td>
+              {Object.entries(groupedSchedule).map(([jobTitle, shifts]) => (
+                    <tr key={jobTitle}>
+                      <td className="whitespace-nowrap py-4 px-3 text-sm font-semibold text-gray-900">
+                        {jobTitle}
+                      </td>
+                      {Object.keys(daysOrder).map((day) => {
+                        const shift = shifts.find((s) => s.day === day);
+                        return (
+                          <td key={day} className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                            {shift ? `${shift.start_time} - ${shift.end_time}` : '-'}
+                          </td>
+                        );
+                      })}
                     </tr>
-                ))}
+                  ))}
               </tbody>
             </table>
           </div>

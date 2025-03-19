@@ -140,8 +140,7 @@ const groupedSchedule = useMemo(() => {
     <div className="bg-stone-200 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900">Welcome {employee_name}!</h1>
-          <h2 className="text-xl font-medium text-gray-700 mt-2">Weekly Schedule</h2>
+          <h1 className="text-3xl font-semibold text-gray-900">Here is your weekly schedule:</h1>
         </header>
 
         {Object.keys(groupedSchedule).length === 0 ? (
