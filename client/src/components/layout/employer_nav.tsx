@@ -1,10 +1,9 @@
 import auth from '../../services/auth';
 import logo from '../../assets/logo.png';
-import { useParams } from 'react-router-dom';
 
 export default function EmployerNavbar() {
-const company_id = useParams<{ company_id: string }>().company_id;
-
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const company_id = user.companyId;
     return (
         <div className=" bg-slate-400">
             <div className="flex h-30 items-center justify-between">
