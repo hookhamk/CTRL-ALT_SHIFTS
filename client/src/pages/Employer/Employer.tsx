@@ -1,7 +1,5 @@
-
 import { Link } from 'react-router-dom';
 import Modal from '../../components/ui/modal';
-
 import { useState } from 'react';
 
 function Employer() {

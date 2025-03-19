@@ -30,7 +30,7 @@ const typeDefs = gql`
     _id: ID!
     job_id: Int!
     job_title: String!
-    employee_id: Int!
+    employee_id: ID!
     employee_name: String!
     date: String!
     start_time: String!
@@ -47,8 +47,9 @@ const typeDefs = gql`
     employee(id: ID!): Employee
     employers: [Employer]
     employer(id: ID!): Employer
-    schedules: [Schedule]
+    schedules(employee_id: ID): [Schedule]
     schedule(id: ID!): Schedule
+    employeeSchedules(employee_id: ID): [Schedule]
     me: Employee
   }
 
@@ -73,7 +74,7 @@ const typeDefs = gql`
     addSchedule(
       job_id: Int!
       job_title: String!
-      employee_id: Int!
+      employee_id: ID! 
       employee_name: String!
       date: String!
       start_time: String!
@@ -111,7 +112,7 @@ const typeDefs = gql`
       id: ID!
       job_id: Int
       job_title: String
-      employee_id: Int
+      employee_id: ID
       employee_name: String
       date: String
       start_time: String
