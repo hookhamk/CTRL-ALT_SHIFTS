@@ -24,6 +24,13 @@ export const resolvers = {
   return await Schedule.find({ employee_id }); // ✅ Fetch only this employee's schedule
 },
 
+    employeeSchedules: async (_: any, { employee_id }: { employee_id: string }) => {
+      if (!mongoose.Types.ObjectId.isValid(employee_id)) {
+        throw new Error("Invalid employee ID format");
+      }
+      return await Schedule.find({ employee_id });
+    },
+
     me: async (_: any, __: any, context: { user?: { id: string } }) => {
       if (!context.user) {
         throw new AuthenticationError('Not logged in');

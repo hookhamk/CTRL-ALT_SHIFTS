@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { useEffect, useMemo } from 'react';
-import { GET_SCHEDULE } from "../../services/queries";
+import { GET_EMPLOYEE_SCHEDULES } from "../../services/queries";
 
 interface Schedule {
   id: number;
@@ -11,21 +11,18 @@ interface Schedule {
 }
 
 interface Employee {
-  id: string;
-  first_name: string;
-  last_name: string;
   schedule: Schedule[];
 }
 
 // Days order mapping
 const daysOrder: Record<string, number> = {
+  Sunday: 0,
   Monday: 1,
   Tuesday: 2,
   Wednesday: 3,
   Thursday: 4,
   Friday: 5,
   Saturday: 6,
-  Sunday: 0,
 };
 
 function Weekly() {
@@ -38,10 +35,11 @@ function Weekly() {
     }
   }, []);
 
-  const employee_id = user?.id ? String(user.id) : null;
+
+  const employee_id = user.id;
 
   // Fetch employee schedule
-  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
+  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_EMPLOYEE_SCHEDULES, {
     variables: { id: employee_id }, // ✅ Ensure correct variable name
     skip: !employee_id, // ✅ Prevent query if employee_id is missing
   });
