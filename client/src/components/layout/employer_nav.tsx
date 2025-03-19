@@ -17,7 +17,7 @@ const company_id = useParams<{ company_id: string }>().company_id;
                         />
                     </div>
                     <div className="hidden sm:ml-6 sm:block">
-                        <div className="flex space-x-4">
+                        <div className="flex flex-wrap space-x-4">
                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                             <a href={`/${company_id}/schedule`} className="rounded-md px-3 py-2 text-sm font-medium text-yellow-50 hover:bg-slate-700 hover:text-white">
                                 Schedule
