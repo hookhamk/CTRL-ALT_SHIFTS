@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { AuthenticationError } from 'apollo-server-express';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 dotenv.config();
 
 export const resolvers = {
@@ -16,8 +17,19 @@ export const resolvers = {
     employers: async () => await Employer.find(),
     employer: async (_: any, { id }: { id: string }) => await Employer.findById(id),
 
-    schedules: async () => await Schedule.find(),
-    schedule: async (_: any, { id }: { id: string }) => await Schedule.findById(id),
+  schedules: async (_: any, { employee_id }: { employee_id: string }) => {
+  if (!mongoose.Types.ObjectId.isValid(employee_id)) {
+    throw new Error("Invalid employee ID format");
+  }
+  return await Schedule.find({ employee_id }); // ✅ Fetch only this employee's schedule
+},
+
+    employeeSchedules: async (_: any, { employee_id }: { employee_id: string }) => {
+      if (!mongoose.Types.ObjectId.isValid(employee_id)) {
+        throw new Error("Invalid employee ID format");
+      }
+      return await Schedule.find({ employee_id });
+    },
 
     me: async (_: any, __: any, context: { user?: { id: string } }) => {
       if (!context.user) {
@@ -28,6 +40,25 @@ export const resolvers = {
   },
 
   Mutation: {
+    addJob: async (_: any, { job_title, company_id }: { job_title: string, company_id: number }) => {
+      const newJob = new Job({ job_title, company_id });
+      await newJob.save();
+      return newJob;
+    },
+
+    updateJob: async (_: any, { id, job_title, company_id }: { id: string, job_title?: string, company_id?: number }) => {
+      return await Job.findByIdAndUpdate(
+        id,
+        { job_title, company_id },
+        { new: true }
+      );
+    },
+
+    deleteJob: async (_: any, { id }: { id: string }) => {
+      const result = await Job.findByIdAndDelete(id);
+      return result !== null;
+    },
+    
     addEmployee: async (
       _: any,
       { email, password, first_name, last_name, job, company_id, access_level }:

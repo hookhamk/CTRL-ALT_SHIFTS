@@ -5,6 +5,8 @@ interface TokenData {
   id: string;
   email: string;
   access_level: boolean;
+  first_name?: string;  // Added first_name
+  company_id?: number;  // Added company_id
   exp: number;
 }
 

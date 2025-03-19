@@ -1,5 +1,27 @@
 import { gql } from "@apollo/client";
 
+export const GET_JOBS = gql`
+  query GetJobs {
+    jobs {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
+export const GET_JOB = gql`
+  query GetJob($id: ID!) {
+    job(id: $id) {
+      _id
+      title
+      description
+      company_id
+    }
+  }
+`;
+
 export const GET_ME = gql`
   query Me {
     me {
@@ -42,6 +64,21 @@ export const GET_EMPLOYEE = gql`
       employer {
         business_name
       }
+    }
+  }
+`;
+
+export const GET_EMPLOYEE_SCHEDULES = gql`
+  query GetEmployeeSchedules($employee_id: ID) {
+    employeeSchedules(employee_id: $employee_id) {
+      _id
+      job_id
+      job_title
+      employee_id
+      employee_name
+      date
+      start_time
+      end_time
     }
   }
 `;
@@ -105,3 +142,19 @@ export const GET_SCHEDULE = gql`
   }
 `;
 
+export const GET_TABLES = gql`
+  query GetTables($id: ID!) {
+    table(id: $id) {
+      id
+      title
+      description
+      fields {
+        id
+        label
+        type
+        placeholder
+        rows
+      }
+    }
+  }
+`;

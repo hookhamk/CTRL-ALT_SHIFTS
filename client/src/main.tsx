@@ -12,12 +12,14 @@ import Home from './pages/Home.tsx';
 import Login from './pages/Login.tsx';
 import About from './pages/About.tsx';
 import Employer from './pages/Employer/Employer.tsx';
-import Daily from './pages/Employee/Daily.tsx';
 import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
-import Weekly from './pages/Employee/Weekly.tsx';
 import Contact from './pages/Contact.tsx';
+import Weekly from "./pages/Employee/Weekly.tsx";
+import Daily from "./pages/Employee/Daily.tsx";
+import Welcome from "./pages/Employee/Welcome.tsx";
+
 
 const router = createBrowserRouter([
   {
@@ -25,22 +27,10 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: '/login',
-        element: <Login />
-      },
-      {
-        path: '/about',
-        element: <About />
-      },
-      {
-        path: '/contact',
-        element: <Contact />
-      },
+      { index: true, element: <Home /> },
+      { path: '/login', element: <Login /> },
+      { path: '/about', element: <About /> },
+      { path: '/contact', element: <Contact /> },
       {
         path: '/:company_id',
         element: (
@@ -49,33 +39,22 @@ const router = createBrowserRouter([
           </AdminRoute>
         ),
         children: [
-          {
-            path: 'schedule',
-            element: <Schedule />,
-          },
-          {
-            path: 'employees',
-            element: <Employees />,
-          },
-          {
-            path: 'jobs',
-            element: <Jobs />,
-          },
+          { path: 'jobs', element: <Jobs /> },
+          { path: 'schedule', element: <Schedule /> },
+          { path: 'employees', element: <Employees /> },
         ]
       },
       {
-        path: '/:company_id/:employee_id', // Fixed typo in 'company_id' (was 'compnay_id')
-        element: <Weekly />,
+        path: '/:company_id/:employee_id',
+        element: <Welcome />, 
         children: [
-          {
-            path: 'daily',
-            element: <Daily />,
-          },
+          { path: 'weekly', element: <Weekly /> },
+          { path: 'daily', element: <Daily /> }
         ]
-      },
+      }
     ]
   }
-])
+]);
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

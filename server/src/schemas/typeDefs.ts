@@ -1,6 +1,12 @@
 import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
+  type Job {
+    _id: ID!
+    job_title: String!
+    company_id: Int!
+  }
+
   type Employee {
     _id: ID!
     email: String!
@@ -17,14 +23,14 @@ const typeDefs = gql`
     _id: ID!
     business_name: String!
     company_id: Int!
-    employees: [Employee!]! 
+    employees: [Employee!]!
   }
 
   type Schedule {
     _id: ID!
     job_id: Int!
     job_title: String!
-    employee_id: Int!
+    employee_id: ID!
     employee_name: String!
     date: String!
     start_time: String!
@@ -41,8 +47,9 @@ const typeDefs = gql`
     employee(id: ID!): Employee
     employers: [Employer]
     employer(id: ID!): Employer
-    schedules: [Schedule]
+    schedules(employee_id: ID): [Schedule]
     schedule(id: ID!): Schedule
+    employeeSchedules(employee_id: ID): [Schedule]
     me: Employee
   }
 
@@ -67,12 +74,23 @@ const typeDefs = gql`
     addSchedule(
       job_id: Int!
       job_title: String!
-      employee_id: Int!
+      employee_id: ID! 
       employee_name: String!
       date: String!
       start_time: String!
       end_time: String!
     ): Schedule
+
+    addJob(
+      job_title: String!
+      company_id: Int!
+    ): Job
+
+    updateJob(
+      id: ID!
+      job_title: String
+      company_id: Int
+    ): Job
 
     updateEmployee(
       id: ID!
@@ -94,7 +112,7 @@ const typeDefs = gql`
       id: ID!
       job_id: Int
       job_title: String
-      employee_id: Int
+      employee_id: ID
       employee_name: String
       date: String
       start_time: String
@@ -104,7 +122,9 @@ const typeDefs = gql`
     deleteEmployee(id: ID!): Boolean
     deleteEmployer(id: ID!): Boolean
     deleteSchedule(id: ID!): Boolean
+    deleteJob(id: ID!): Boolean
   }
 `;
 
 export { typeDefs };
+
