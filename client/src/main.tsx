@@ -46,7 +46,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/:company_id/:employee_id',
-        element: <Welcome />, // This acts as the parent for employee-related pages
+        element: <Welcome />, 
         children: [
           { path: 'weekly', element: <Weekly /> },
           { path: 'daily', element: <Daily /> }
