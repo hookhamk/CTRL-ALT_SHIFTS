@@ -44,7 +44,6 @@ function Daily() {
     }
   }, []);
 
-  const employee_name = user.first_name || 'Employee';
   const employee_id = user.id;
 
   // Fetch employee schedules
@@ -70,7 +69,7 @@ function Daily() {
     const lastDayOfMonth = new Date(year, month + 1, 0);
     
     // Get day of week for first day (0 = Sunday, 1 = Monday, etc)
-    let firstDayOfWeek = firstDayOfMonth.getDay();
+    const firstDayOfWeek = firstDayOfMonth.getDay();
 
     
     const daysInMonth = lastDayOfMonth.getDate();
@@ -271,9 +270,8 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
     <div className="bg-stone-200 py-8 px-4 sm:py-12 sm:px-6">
       <header className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-          Welcome {employee_name}!
+          Upcoming Shifts
         </h1>
-        <h2 className="text-base font-semibold text-gray-900 mt-2">Upcoming shifts</h2>
       </header>
 
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-8">
