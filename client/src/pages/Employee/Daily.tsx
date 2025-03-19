@@ -22,7 +22,6 @@ function Daily() {
 
   // Load user data once and memoize it
   const user = useMemo(() => JSON.parse(localStorage.getItem('user') || '{}'), []);
-  const employee_name = user.first_name;
   const employee_id = user.id;
 
   // Manage selected date
@@ -47,10 +46,7 @@ function Daily() {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Here is your schedule for today and the upcoming days.
-          </p>
+          <h1 className="text-base font-semibold text-gray-900">Here is your schedule for today and the upcoming days.</h1>
         </div>
       </div>
       <div className="mt-8 flex flex-col">
