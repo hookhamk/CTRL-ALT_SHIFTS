@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Switch } from '@headlessui/react'
 import EmployeeNavbar from './components/layout/employee_nav'
 import EmployerNavbar from './components/layout/employer_nav'
@@ -9,13 +9,21 @@ import './index.css';
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const hiddenNavbarRoutes = ["/login", "/", "/about", "/contact"];
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const employee_id = user.id;
+  const company_id = user.company_id;
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user && user.accessLevel !== undefined) {
+      console.log('isLogedIn:', isLoggedIn);
+      console.log('isAdmin:', isAdmin);
+      console.log('toggleNavbar:', toggleNavbar);
+
       setIsAdmin(user.accessLevel);
       console.log(user.accessLevel);
       setIsLoggedIn(true);
@@ -24,21 +32,23 @@ function App() {
     }
   }, []);
 
-const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
-const [enabled, setEnabled] = useState(false);
+  const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
+  const [enabled, setEnabled] = useState(false);
 
-const handleSwitchChange = () => {
+  const handleSwitchChange = () => {
     setEnabled(!enabled);
+
+    if (enabled) {
+      navigate(`/${company_id}/${employee_id}`);
+    } else {
+      navigate(`/${company_id}`);
+    }
   };
-
-
-console.log('isAdmin:', isAdmin);
-console.log('toggleNavbar:', toggleNavbar);
 
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-slate-400 pr-4 flex justify-between items-center flex-row-reverse">
-      {toggleNavbar && isLoggedIn && (
+        {toggleNavbar && isLoggedIn && (
           <>
             {isAdmin && (
               <Switch
@@ -53,7 +63,7 @@ console.log('toggleNavbar:', toggleNavbar);
                 />
               </Switch>
             )}
-            {enabled ? <EmployerNavbar /> : <EmployeeNavbar />}
+            {enabled ? <EmployeeNavbar /> : <EmployerNavbar />}
           </>
         )}
       </header>
@@ -64,7 +74,7 @@ console.log('toggleNavbar:', toggleNavbar);
         <Footer />
       </footer>
     </div>
-  )
+  );
 }
 
-export default App;
+  export default App;

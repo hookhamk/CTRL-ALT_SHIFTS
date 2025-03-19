@@ -1,151 +1,126 @@
+import { useQuery } from '@apollo/client';
+import Client from '../../components/client';
+import { GET_SCHEDULE } from "../../services/queries";
 
-interface Person {
-  name: string;
-  title: string;
-  email: string;
-  role: string;
+interface Schedule {
+  id: number;
+  job_title: string;
+  day: string;
+  start_time: string;
+  end_time: string;
+}
+
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  schedule: Schedule[];
 }
 
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 const employee_name = user.first_name;
+const employee_id = user.id;
 
-const people: Person[] = [
-  { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-  // More people...
-];
+// Days in order for sorting
+const daysOrder: Record<string, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7,
+};
 
-function classNames(...classes: (string | boolean)[]): string {
-  return classes.filter(Boolean).join(' ');
-}
+function Weekly() {
+  const { data, loading, error } = useQuery(GET_SCHEDULE, {
+    variables: { employee_id },
+    client: Client(),
+  });
 
-export default function Weekly() {
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const employee: Employee = data.employee;
+
+  // Group shifts by job title and sort by day
+  const groupedSchedule = employee.schedule.reduce<Record<string, Schedule[]>>((acc, shift) => {
+    if (!acc[shift.job_title]) {
+      acc[shift.job_title] = [];
+    }
+    acc[shift.job_title].push(shift);
+    return acc;
+  }, {});
+
+  // Sort shifts by day order
+  Object.keys(groupedSchedule).forEach((job) => {
+    groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+  });
+
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
-          <p className="mt-2 text-sm text-gray-700">
-          Please see your weekly schedule below.
-          </p>
+    <div className="bg-stone-200 py-24 sm:py-32">
+      <header className="mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
+        Welcome {employee_name}!
+      </header>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="sm:flex sm:items-center">
+          <div className="sm:flex-auto">
+            <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
+            <p className="mt-2 text-sm text-gray-700">Please see your weekly schedule below.</p>
+          </div>
+          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+            <button
+              type="button"
+              className="block rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600"
+            >
+              Look up another date
+            </button>
+          </div>
         </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600"
-          >
-           Look up another date
-          </button>
-        </div>
-      </div>
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle">
-            <table className="min-w-full border-separate border-spacing-0">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8"
-                  >
-                    Job Assignment
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:table-cell"
-                  >
-                    Monday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter lg:table-cell"
-                  >
-                    Tuesday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Wednesday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Thursday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Friday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Saturday
-                  </th>
-                  <th
-                    scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
-                  >
-                    Sunday
-                  </th>
-                </tr>
-              </thead>
-              {/* mutations go here. Reformat for weekly schdule by employee */}
-              <tbody>
-                {people.map((person, personIdx) => (
-                  <tr key={person.email}>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 lg:pl-8',
-                      )}
-                    >
-                      {person.name}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 sm:table-cell',
-                      )}
-                    >
-                      {person.title}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'hidden px-3 py-4 text-sm whitespace-nowrap text-gray-500 lg:table-cell',
-                      )}
-                    >
-                      {person.email}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'px-3 py-4 text-sm whitespace-nowrap text-gray-500',
-                      )}
-                    >
-                      {person.role}
-                    </td>
-                    <td
-                      className={classNames(
-                        personIdx !== people.length - 1 ? 'border-b border-gray-200' : '',
-                        'relative py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-8 lg:pr-8',
-                      )}
-                    >
-                      <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                        Edit<span className="sr-only">, {person.name}</span>
-                      </a>
-                    </td>
+
+        <div className="mt-8 flow-root">
+          <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle">
+              <table className="min-w-full border-separate border-spacing-0">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter sm:pl-6 lg:pl-8">
+                      Job Assignment
+                    </th>
+                    {Object.keys(daysOrder).map((day) => (
+                      <th
+                        key={day}
+                        className="sticky top-0 z-10 border-b border-gray-300 bg-white/75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur-sm backdrop-filter"
+                      >
+                        {day}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {Object.entries(groupedSchedule).map(([jobTitle, shifts]) => (
+                    <tr key={jobTitle}>
+                      <td className="whitespace-nowrap py-4 px-3 text-sm font-semibold text-gray-900">
+                        {jobTitle}
+                      </td>
+                      {Object.keys(daysOrder).map((day) => {
+                        const shift = shifts.find((s) => s.day === day);
+                        return (
+                          <td key={day} className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                            {shift ? `${shift.start_time} - ${shift.end_time}` : '-'}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+export default Weekly;
