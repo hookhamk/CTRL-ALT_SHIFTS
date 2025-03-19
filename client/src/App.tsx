@@ -13,9 +13,7 @@ function App() {
   const hiddenNavbarRoutes = ["/login", "/", "/about", "/contact"];
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const employee_id = user.id;
-  const company_id = user.company_id;
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -23,9 +21,9 @@ function App() {
       console.log('isLogedIn:', isLoggedIn);
       console.log('isAdmin:', isAdmin);
       console.log('toggleNavbar:', toggleNavbar);
+      console.log(user.accessLevel);
 
       setIsAdmin(user.accessLevel);
-      console.log(user.accessLevel);
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
@@ -33,10 +31,13 @@ function App() {
   }, []);
 
   const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
-  const [enabled, setEnabled] = useState(false);
+
 
   const handleSwitchChange = () => {
     setEnabled(!enabled);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const employee_id = user.id;
+    const company_id = user.company_id;
 
     if (enabled) {
       navigate(`/${company_id}/${employee_id}`);
@@ -47,24 +48,32 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-slate-400 pr-4 flex justify-between items-center flex-row-reverse">
+      <header className="bg-slate-400 flex">
         {toggleNavbar && isLoggedIn && (
-          <>
-            {isAdmin && (
-              <Switch
-                checked={enabled}
-                onChange={handleSwitchChange}
-                className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:outline-hidden data-checked:bg-lime-500"
-              >
-                <span className="sr-only">Toggle Navbar</span>
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none inline-block size-5 transform rounded-full bg-white ring-0 shadow-sm transition duration-200 ease-in-out group-data-checked:translate-x-5"
-                />
-              </Switch>
+          <div className="flex pr-4 justify-between items-center flex-row">
+            {isAdmin ? (
+              <>
+                {/* Admins see the switch */}
+                <Switch
+                  checked={!enabled}
+                  onChange={handleSwitchChange}
+                  className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:outline-hidden data-checked:bg-lime-500"
+                >
+                  <span className="sr-only">Toggle Navbar</span>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none inline-block size-5 transform rounded-full bg-white ring-0 shadow-sm transition duration-200 ease-in-out group-data-checked:translate-x-5"
+                  />
+                </Switch>
+              </>
+            ) : (
+              // Invisible placeholder to maintain spacing
+              <div className="w-27 h-6" />
             )}
-            {enabled ? <EmployeeNavbar /> : <EmployerNavbar />}
-          </>
+
+            {/* Navbar Rendering */}
+            {isAdmin ? (enabled ? <EmployeeNavbar /> : <EmployerNavbar />) : <EmployeeNavbar />}
+          </div>
         )}
       </header>
       <main className="bg-stone-200 flex-grow flex items-center justify-center">
@@ -77,4 +86,4 @@ function App() {
   );
 }
 
-  export default App;
+export default App;

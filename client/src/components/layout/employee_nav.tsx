@@ -18,8 +18,8 @@ const EmployeeNavbar = () => {
                                 className="w-24 h-auto object-contain"
                             />
                         </div>
-                        <div className="hidden sm:ml-6 sm:block">
-                            <div className="flex space-x-4">
+                        <div className="sm:ml-6 sm:block">
+                            <div className="flex flex-wrap space-x-4 basis-1/4 md:basis-1/3">
                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                             <a href="/daily" className="rounded-md px-3 py-2 text-sm font-medium text-yellow-50 hover:bg-slate-700 hover:text-white">
                                 Daily Schedule

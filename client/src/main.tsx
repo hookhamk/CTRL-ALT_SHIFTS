@@ -18,6 +18,7 @@ import Jobs from './pages/Employer/Jobs.tsx';
 import Contact from './pages/Contact.tsx';
 import Weekly from "./pages/Employee/Weekly.tsx";
 import Daily from "./pages/Employee/Daily.tsx";
+import Welcome from "./pages/Employee/Welcome.tsx";
 
 
 const router = createBrowserRouter([
@@ -26,65 +27,34 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: '/login',
-        element: <Login />
-      },
-      {
-        path: '/about',
-        element: <About />
-      },
-      {
-        path: '/contact',
-        element: <Contact />
-      },
+      { index: true, element: <Home /> },
+      { path: '/login', element: <Login /> },
+      { path: '/about', element: <About /> },
+      { path: '/contact', element: <Contact /> },
       {
         path: '/:company_id',
         element: (
           <AdminRoute>
             <Employer />
           </AdminRoute>
-        )
-      },
-      {
-        path: '/:company_id/jobs',
-        element: (
-          <AdminRoute>
-            <Jobs />
-          </AdminRoute>
-        )
-      },
-      {
-        path: '/:company_id/schedule',
-        element: (
-          <AdminRoute>
-            <Schedule />
-          </AdminRoute>
-        )
-      },
-      {
-        path: '/:company_id/employees',
-        element: (
-          <AdminRoute>
-            <Employees />
-          </AdminRoute>
-        )
+        ),
+        children: [
+          { path: 'jobs', element: <Jobs /> },
+          { path: 'schedule', element: <Schedule /> },
+          { path: 'employees', element: <Employees /> },
+        ]
       },
       {
         path: '/:company_id/:employee_id',
-        element: <Weekly />,
-      },
-      {
-        path: '/:company_id/:employee_id/daily',
-        element: <Daily />,
-      },
+        element: <Welcome />, // This acts as the parent for employee-related pages
+        children: [
+          { path: 'weekly', element: <Weekly /> },
+          { path: 'daily', element: <Daily /> }
+        ]
+      }
     ]
   }
-])
+]);
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
