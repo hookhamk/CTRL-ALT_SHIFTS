@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { AuthenticationError } from 'apollo-server-express';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 dotenv.config();
 
 export const resolvers = {
@@ -16,8 +17,12 @@ export const resolvers = {
     employers: async () => await Employer.find(),
     employer: async (_: any, { id }: { id: string }) => await Employer.findById(id),
 
-    schedules: async () => await Schedule.find(),
-    schedule: async (_: any, { id }: { id: string }) => await Schedule.findById(id),
+  schedules: async (_: any, { employee_id }: { employee_id: string }) => {
+  if (!mongoose.Types.ObjectId.isValid(employee_id)) {
+    throw new Error("Invalid employee ID format");
+  }
+  return await Schedule.find({ employee_id }); // ✅ Fetch only this employee's schedule
+},
 
     me: async (_: any, __: any, context: { user?: { id: string } }) => {
       if (!context.user) {
