@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import Client from '../../components/client';
+import { useEffect, useMemo } from 'react';
 import { GET_SCHEDULE } from "../../services/queries";
 
 interface Schedule {
@@ -17,11 +17,7 @@ interface Employee {
   schedule: Schedule[];
 }
 
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-const employee_name = user.first_name;
-const employee_id = user.id;
-
-// Days in order for sorting
+// Days order mapping
 const daysOrder: Record<string, number> = {
   Monday: 1,
   Tuesday: 2,
@@ -33,48 +29,52 @@ const daysOrder: Record<string, number> = {
 };
 
 function Weekly() {
-  const { data, loading, error } = useQuery(GET_SCHEDULE, {
+  // Load user data once and memoize it
+  const user = useMemo(() => JSON.parse(localStorage.getItem('user') || '{}'), []);
+  const employee_name = user.first_name;
+  const employee_id = user.id;
+
+  // Fetch employee schedule
+  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
     variables: { employee_id },
-    client: Client(),
   });
+
+  // Debugging logs
+  useEffect(() => {
+    console.log('Weekly component mounted');
+  }, []);
+
+  const groupedSchedule = useMemo(() => {
+    if (!data?.employee) return {};
+
+    return data.employee.schedule.reduce<Record<string, Schedule[]>>((acc: Record<string, Schedule[]>, shift: Schedule) => {
+      if (!acc[shift.job_title]) {
+      acc[shift.job_title] = [];
+      }
+      acc[shift.job_title].push(shift);
+      return acc;
+    }, {});
+  }, [data]);
+
+  // Sort each job's shifts by day order
+  useMemo(() => {
+    Object.keys(groupedSchedule).forEach((job) => {
+      groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+    });
+  }, [groupedSchedule]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const employee: Employee = data.employee;
-
-  // Group shifts by job title and sort by day
-  const groupedSchedule = employee.schedule.reduce<Record<string, Schedule[]>>((acc, shift) => {
-    if (!acc[shift.job_title]) {
-      acc[shift.job_title] = [];
-    }
-    acc[shift.job_title].push(shift);
-    return acc;
-  }, {});
-
-  // Sort shifts by day order
-  Object.keys(groupedSchedule).forEach((job) => {
-    groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
-  });
+  if (error) return <p>Error: {error?.message}</p>;
 
   return (
     <div className="bg-stone-200 py-24 sm:py-32">
       <header className="mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
-        Welcome {employee_name}!
       </header>
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-base font-semibold text-gray-900">Welcome {employee_name}!</h1>
             <p className="mt-2 text-sm text-gray-700">Please see your weekly schedule below.</p>
-          </div>
-          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <button
-              type="button"
-              className="block rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-lime-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600"
-            >
-              Look up another date
-            </button>
           </div>
         </div>
 

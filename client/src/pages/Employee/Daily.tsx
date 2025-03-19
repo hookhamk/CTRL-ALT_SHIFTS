@@ -1,38 +1,72 @@
 
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useQuery } from '@apollo/client';
-import Client from '../../components/client';
+import { useEffect, useMemo } from 'react';
 import { GET_SCHEDULE } from "../../services/queries";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+interface Schedule {
+  id: number;
+  job_title: string;
+  day: string;
+  start_time: string;
+  end_time: string;
 }
-function Daily() {
-  interface Schedule {
-    schedule_id: string;
-    job_title: string;
-    date: string;
-    start_time: string;
-    end_time: string;
-    datetime: string;
-  }
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  schedule: Schedule[];
+}
+
+// Days order mapping
+const daysOrder: Record<string, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7,
+};
+
+function Daily() {
+  // Load user data once and memoize it
+  const user = useMemo(() => JSON.parse(localStorage.getItem('user') || '{}'), []);
   const employee_name = user.first_name;
   const employee_id = user.id;
 
-  const { data: schedulesData } = useQuery(GET_SCHEDULE, {
+  // Fetch employee schedule
+  const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
     variables: { employee_id },
-    client: Client(),
   });
 
-  const days = Array.from({ length: 28 }, (_, i) => {
-    const date = new Date(2025, 0, i + 1).toISOString().split('T')[0]
-    const isCurrentMonth = date.startsWith('2025-03')
-    const isToday = date === new Date().toISOString().split('T')[0]
-    const isSelected = schedulesData?.schedules?.some((schedule: Schedule) => schedule.date === date) || false
-    return { date, isCurrentMonth, isToday, isSelected }
-  });
+  // Debugging logs
+  useEffect(() => {
+    console.log('Daily component mounted');
+  }, []);
+
+  const groupedSchedule = useMemo(() => {
+    if (!data?.employee) return {};
+
+    return data.employee.schedule.reduce<Record<string, Schedule[]>>((acc: Record<string, Schedule[]>, shift: Schedule) => {
+      if (!acc[shift.job_title]) {
+      acc[shift.job_title] = [];
+      }
+      acc[shift.job_title].push(shift);
+      return acc;
+    }, {});
+  }, [data]);
+
+  // Sort each job's shifts by day order
+  useMemo(() => {
+    Object.keys(groupedSchedule).forEach((job) => {
+      groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+    });
+  }, [groupedSchedule]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error?.message}</p>;
 
   return (
     <div className="bg-stone-200 py-24 sm:py-32">
