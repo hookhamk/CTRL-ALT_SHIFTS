@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
-import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
-import { useState } from 'react';
+import { Dialog, DialogPanel } from '@headlessui/react'
+import { useState, useEffect } from 'react';
 import Form from './newEmployee.tsx';
 
 interface ModalProps {

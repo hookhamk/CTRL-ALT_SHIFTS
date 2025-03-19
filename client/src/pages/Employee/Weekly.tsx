@@ -1,3 +1,4 @@
+
 import { useQuery } from '@apollo/client';
 import { useEffect, useMemo } from 'react';
 import { GET_EMPLOYEE_SCHEDULES } from "../../services/queries";
@@ -8,6 +9,14 @@ interface Schedule {
   day: string;
   start_time: string;
   end_time: string;
+  date: string;
+}
+
+interface Employee {
+  id: string;
+  first_name: string;
+  last_name: string;
+  schedule: Schedule[];
 }
 
 interface Employee {
