@@ -30,38 +30,45 @@ const daysOrder: Record<string, number> = {
 
 function Weekly() {
   // Load user data once and memoize it
-  const user = useMemo(() => JSON.parse(localStorage.getItem('user') || '{}'), []);
-  const employee_name = user.first_name;
-  const employee_id = user.id;
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const employee_name = user?.first_name || "Employee";
+  const employee_id = user?.id ? String(user.id) : null;
 
   // Fetch employee schedule
   const { data, loading, error } = useQuery<{ employee: Employee }>(GET_SCHEDULE, {
-    variables: { employee_id },
+    variables: { id: employee_id }, // ✅ Ensure correct variable name
+    skip: !employee_id, // ✅ Prevent query if employee_id is missing
   });
 
   // Debugging logs
   useEffect(() => {
     console.log('Weekly component mounted');
-  }, []);
+    console.log('Employee ID:', employee_id);
+  }, [employee_id]);
 
   const groupedSchedule = useMemo(() => {
-    if (!data?.employee) return {};
+    if (!data?.employee?.schedule) return {};
 
-    return data.employee.schedule.reduce<Record<string, Schedule[]>>((acc: Record<string, Schedule[]>, shift: Schedule) => {
-      if (!acc[shift.job_title]) {
-      acc[shift.job_title] = [];
-      }
+    const scheduleMap = data.employee.schedule.reduce<Record<string, Schedule[]>>((acc, shift) => {
+      if (!acc[shift.job_title]) acc[shift.job_title] = [];
       acc[shift.job_title].push(shift);
       return acc;
     }, {});
-  }, [data]);
 
-  // Sort each job's shifts by day order
-  useMemo(() => {
-    Object.keys(groupedSchedule).forEach((job) => {
-      groupedSchedule[job].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
+    // ✅ Sort each job's shifts by day order without mutating the original data
+    Object.keys(scheduleMap).forEach((job) => {
+      scheduleMap[job] = [...scheduleMap[job]].sort((a, b) => daysOrder[a.day] - daysOrder[b.day]);
     });
-  }, [groupedSchedule]);
+
+    return scheduleMap;
+  }, [data]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error?.message}</p>;
