@@ -4,6 +4,7 @@ import { Switch } from '@headlessui/react'
 import EmployeeNavbar from './components/layout/employee_nav'
 import EmployerNavbar from './components/layout/employer_nav'
 import Footer from './components/layout/footer'
+import auth from './services/auth'
 import './index.css';
 
 
@@ -31,7 +32,7 @@ function App() {
     } else {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [auth.isAdmin()]);
 
   const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
 
