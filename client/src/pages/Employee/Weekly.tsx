@@ -14,16 +14,16 @@ interface Schedule {
   end_time: string;
 }
 
-// Days order mapping
-const daysOrder: Record<string, number> = {
-  Monday: 1,
-  Tuesday: 2,
-  Wednesday: 3,
-  Thursday: 4,
-  Friday: 5,
-  Saturday: 6,
-  Sunday: 0,
-};
+// // Days order mapping
+// const daysOrder: Record<string, number> = {
+//   Monday: 1,
+//   Tuesday: 2,
+//   Wednesday: 3,
+//   Thursday: 4,
+//   Friday: 5,
+//   Saturday: 6,
+//   Sunday: 0,
+// };
 
 function Weekly() {
   
@@ -54,90 +54,84 @@ function Weekly() {
   }, [data]);
 
   // Process schedule data
-  const groupedSchedule = useMemo(() => {
-    if (!data?.employeeSchedules || !Array.isArray(data.employeeSchedules)) {
-      console.log("No schedule data available");
-      return {};
-    }
+// Process schedule data
+const groupedSchedule = useMemo(() => {
+  if (!data?.employeeSchedules || !Array.isArray(data.employeeSchedules)) {
+    console.log("No schedule data available");
+    return {};
+  }
 
-    const scheduleMap: Record<string, any[]> = {};
-    
-    // Process each schedule item
-    data.employeeSchedules.forEach((schedule: Schedule) => {
-      try {
-        // Parse the Unix timestamp (milliseconds) to a Date object
-        const parseTimestamp = (timestamp: string): Date => {
-          // First check if it's a large number (Unix timestamp)
-          const num = Number(timestamp);
-          if (!isNaN(num) && num > 1000000000000) {
-            return new Date(num); // It's a timestamp in milliseconds
-          }
-          // Otherwise treat as a normal date string
-          return new Date(timestamp);
-        };
-        
-        // Format date
-        const dateObj = parseTimestamp(schedule.date);
-        console.log("Parsed date:", schedule.date, "->", dateObj);
-        
-        if (isNaN(dateObj.getTime())) {
-          console.error("Invalid date:", schedule.date);
-          return; // Skip this schedule
+  const scheduleMap: Record<string, any[]> = {};
+  
+  // Process each schedule item
+  data.employeeSchedules.forEach((schedule: Schedule) => {
+    try {
+      // Parse the Unix timestamp (milliseconds) to a Date object
+      const parseTimestamp = (timestamp: string): Date => {
+        const num = Number(timestamp);
+        if (!isNaN(num) && num > 1000000000000) {
+          return new Date(num); // It's a timestamp in milliseconds
         }
-        
-        const day = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-        
-        // Format times
-        const formatTime = (timeStr: string) => {
-          try {
-            const timeObj = parseTimestamp(timeStr);
-            if (isNaN(timeObj.getTime())) {
-              return "Invalid time";
-            }
-            return timeObj.toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true
-            });
-          } catch (e) {
-            console.error("Error formatting time", e);
-            return timeStr;
-          }
-        };
-        
-        // Create processed schedule item
-        const processedSchedule = {
-          id: schedule._id,
-          job_title: schedule.job_title,
-          day,
-          start_time: formatTime(schedule.start_time),
-          end_time: formatTime(schedule.end_time)
-        };
-        
-        console.log("Processed schedule:", processedSchedule);
-        
-        // Add to schedule map by job title
-        if (!scheduleMap[schedule.job_title]) {
-          scheduleMap[schedule.job_title] = [];
-        }
-        
-        scheduleMap[schedule.job_title].push(processedSchedule);
-      } catch (e) {
-        console.error("Error processing schedule", e, schedule);
+        return new Date(timestamp); // Otherwise treat as a normal date string
+      };
+      
+      const dateObj = parseTimestamp(schedule.date);
+      console.log("Parsed date:", schedule.date, "->", dateObj);
+      
+      if (isNaN(dateObj.getTime())) {
+        console.error("Invalid date:", schedule.date);
+        return;
       }
+      
+      // Format the date to display as YYYY-MM-DD
+      const formattedDate = dateObj.toLocaleDateString('en-US'); // e.g., "3/19/2025"
+      
+      // Format times
+      const formatTime = (timeStr: string) => {
+        const timeObj = parseTimestamp(timeStr);
+        if (isNaN(timeObj.getTime())) {
+          return "Invalid time";
+        }
+        return timeObj.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+      };
+      
+      const processedSchedule = {
+        id: schedule._id,
+        job_title: schedule.job_title,
+        day: formattedDate, // Use the formatted date here instead of weekday name
+        start_time: formatTime(schedule.start_time),
+        end_time: formatTime(schedule.end_time)
+      };
+      
+      console.log("Processed schedule:", processedSchedule);
+      
+      // Add to schedule map by job title
+      if (!scheduleMap[schedule.job_title]) {
+        scheduleMap[schedule.job_title] = [];
+      }
+      
+      scheduleMap[schedule.job_title].push(processedSchedule);
+    } catch (e) {
+      console.error("Error processing schedule", e, schedule);
+    }
+  });
+  
+  // Sort schedules by date
+  Object.keys(scheduleMap).forEach(job => {
+    scheduleMap[job].sort((a, b) => {
+      const dateA = new Date(a.day);
+      const dateB = new Date(b.day);
+      return dateA.getTime() - dateB.getTime();
     });
-    
-    // Sort schedules by day
-    Object.keys(scheduleMap).forEach(job => {
-      scheduleMap[job].sort((a, b) => {
-        const dayA = daysOrder[a.day] || 0;
-        const dayB = daysOrder[b.day] || 0;
-        return dayA - dayB;
-      });
-    });
-    
-    return scheduleMap;
-  }, [data]);
+  });
+  
+  return scheduleMap;
+}, [data]);
+
 
   if (loading) return <p className="p-8">Loading your schedule...</p>;
   if (error) return <p className="p-8 text-red-500">Error: {error.message}</p>;
