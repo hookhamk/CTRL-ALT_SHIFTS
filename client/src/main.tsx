@@ -12,12 +12,13 @@ import Home from './pages/Home.tsx';
 import Login from './pages/Login.tsx';
 import About from './pages/About.tsx';
 import Employer from './pages/Employer/Employer.tsx';
-import Daily from './pages/Employee/Daily.tsx';
 import Schedule from './pages/Employer/Schedule.tsx';
 import Employees from './pages/Employer/Employees.tsx';
 import Jobs from './pages/Employer/Jobs.tsx';
-import Weekly from './pages/Employee/Weekly.tsx';
 import Contact from './pages/Contact.tsx';
+import Weekly from "./pages/Employee/Weekly.tsx";
+import Daily from "./pages/Employee/Daily.tsx";
+
 
 const router = createBrowserRouter([
   {
@@ -47,31 +48,39 @@ const router = createBrowserRouter([
           <AdminRoute>
             <Employer />
           </AdminRoute>
-        ),
-        children: [
-          {
-            path: 'schedule',
-            element: <Schedule />,
-          },
-          {
-            path: 'employees',
-            element: <Employees />,
-          },
-          {
-            path: 'jobs',
-            element: <Jobs />,
-          },
-        ]
+        )
       },
       {
-        path: '/:company_id/:employee_id', // Fixed typo in 'company_id' (was 'compnay_id')
+        path: '/:company_id/jobs',
+        element: (
+          <AdminRoute>
+            <Jobs />
+          </AdminRoute>
+        )
+      },
+      {
+        path: '/:company_id/schedule',
+        element: (
+          <AdminRoute>
+            <Schedule />
+          </AdminRoute>
+        )
+      },
+      {
+        path: '/:company_id/employees',
+        element: (
+          <AdminRoute>
+            <Employees />
+          </AdminRoute>
+        )
+      },
+      {
+        path: '/:company_id/:employee_id',
         element: <Weekly />,
-        children: [
-          {
-            path: 'daily',
-            element: <Daily />,
-          },
-        ]
+      },
+      {
+        path: '/:company_id/:employee_id/daily',
+        element: <Daily />,
       },
     ]
   }

@@ -1,5 +1,4 @@
-//TO DO: Add in path to pull employee name for welcome message
-import Form from '../../components/ui/newEmployee';
+
 import { Link } from 'react-router-dom';
 import Modal from '../../components/ui/modal';
 
