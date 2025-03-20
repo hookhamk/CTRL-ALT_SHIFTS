@@ -5,6 +5,8 @@ import EmployeeNavbar from './components/layout/employee_nav'
 import EmployerNavbar from './components/layout/employer_nav'
 import Footer from './components/layout/footer'
 import auth from './services/auth'
+import userIcon from './assets/user-icon.png'
+import companyIcon from './assets/company-icon.png'
 import './index.css';
 
 
@@ -32,7 +34,7 @@ function App() {
     } else {
       setIsLoggedIn(false);
     }
-  }, [auth.isAdmin()]);
+  }, [auth.isAdmin]);
 
   const toggleNavbar = !hiddenNavbarRoutes.includes(location.pathname);
 
@@ -52,24 +54,21 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-slate-400 flex">
+      <header className="bg-slate-400 flex items-center justify-between p-4">
         {toggleNavbar && isLoggedIn && (
-          <div className="flex pr-4 m-3 gap-3 justify-between items-center flex-row">
+          <>
             {isAdmin ? (
-              <>
-                {/* Admins see the switch */}
-                <Switch
-                  checked={enabled}
-                  onChange={handleSwitchChange}
-                  className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:outline-hidden data-checked:bg-lime-500"
-                >
-                  <span className="sr-only">Toggle Navbar</span>
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none inline-block size-5 transform rounded-full bg-white ring-0 shadow-sm transition duration-200 ease-in-out group-data-checked:translate-x-5"
-                  />
-                </Switch>
-              </>
+              <Switch
+                checked={enabled}
+                onChange={handleSwitchChange}
+                className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:outline-hidden data-checked:bg-lime-500"
+              >
+                <span className="sr-only">Toggle Navbar</span>
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none inline-block size-5 transform rounded-full bg-white ring-0 shadow-sm transition duration-200 ease-in-out group-data-checked:translate-x-5"
+                />
+              </Switch>
             ) : (
               // Invisible placeholder to maintain spacing
               <div className="w-27 h-6" />
@@ -77,10 +76,15 @@ function App() {
 
             {/* Navbar Rendering */}
             {isAdmin ? (enabled ? <EmployeeNavbar /> : <EmployerNavbar />) : <EmployeeNavbar />}
-          </div>
+            <img
+              alt="avatar"
+              src={isAdmin? (enabled ? userIcon : companyIcon) : userIcon}
+              className="inline-block size-14 bg-slate-800 rounded-full"
+            />
+          </>
         )}
       </header>
-      <main className="bg-stone-200 flex-grow flex items-center justify-center">
+      <main className ="bg-stone-200 flex-grow items-center justify-center py-4 overflow-y-auto min-h-screen">
         <Outlet />
       </main>
       <footer>

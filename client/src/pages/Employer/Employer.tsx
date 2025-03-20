@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Modal from '../../components/ui/modal';
 import { useState } from 'react';
+import { UsersIcon, BriefcaseIcon, ClockIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline'
 
 function Employer() {
   const [open, setOpen] = useState(false);
@@ -10,65 +11,114 @@ function Employer() {
   const company_id = user.company_id;
 
   return (
-    <div className="bg-white py-24 sm:py-32">
+    <div className="bg-stone-200 py-24 sm:py-32">
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-        <p className="mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
+        <p className="pb-7 mt-2 max-w-lg text-4xl font-semibold tracking-tight text-pretty text-slate-950 sm:text-5xl">
           Welcome {employee_name}!
         </p>
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:mt-16 lg:grid-cols-6 lg:grid-rows-2">
-          <div className="relative lg:col-span-1">
-            <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]">
-              <div className="p-10 pt-4">
-                <button type="button" className="bg-blue-500 text-white px-4 py-2 rounded">
-                  Create Schedule
+        <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-gray-200 shadow-sm sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
+          <div className="rounded-tl-lg rounded-tr-lg sm:rounded-tr-none group relative bg-white p-6 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-inset">
+            <div>
+              <span className="inline-flex rounded-lg p-3 ring-4 ring-white">
+                <ClockIcon className="h-6 w-6 text-green-700 bg-green-50" aria-hidden="true" />
+              </span>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-base font-semibold text-gray-900">Schedules</h3>
+              <span className="isolate inline-flex rounded-md shadow-xs">
+                <button
+                  type="button"
+                  className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-lime-500 focus:z-10"
+                >
+                  Create
                 </button>
-              </div>
-
-            </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5 max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]" />
-          </div>
-          <div className="relative lg:col-span-3">
-            <div className="absolute inset-px rounded-lg bg-white lg:rounded-tr-[2rem]" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-tr-[calc(2rem+1px)]">
-              <div className="p-10 pt-4">
-                <Link to="#" className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                  View Schedule
+                <Link to={`/${company_id}/schedule`}
+                  className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-cyan-500 focus:z-10"
+                >
+                  View
                 </Link>
-              </div>
+              </span>
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5 lg:rounded-tr-[2rem]" />
-        </div>
+          <div className="sm:rounded-tr-lg group relative bg-white p-6 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-inset">
+            <div>
+              <span className="inline-flex rounded-lg p-3 ring-4 ring-white">
+                <UsersIcon className="h-6 w-6 text-cyan-700 bg-cyan-50" aria-hidden="true" />
+              </span>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-base font-semibold text-gray-900">Employees</h3>
+              <span className="isolate inline-flex rounded-md shadow-xs">
+                <button
+                  type="button"
+                  className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-lime-500 focus:z-10"
+                >
+                  Create
+                </button>
+                <Link to={`/${company_id}/employees`}
+                  className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-cyan-500 focus:z-10"
+                >
+                  View
+                </Link>
+              </span>
+            </div>
+          </div>
 
-        <div className="relative lg:col-span-3">
-          <div className="absolute inset-px rounded-lg bg-white lg:rounded-bl-[2rem]" />
-          <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]">
-            <div className="p-10 pt-4">
-              <Link to={`/${company_id}/employees`} className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                View Employees
-              </Link>
+          <div className="sm:rounded-bl-lg group relative bg-white p-6 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-inset">
+            <div>
+              <span className="inline-flex rounded-lg p-3 ring-4 ring-white">
+                <BriefcaseIcon className="h-6 w-6 text-amber-700 bg-amber-50" aria-hidden="true" />
+              </span>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-base font-semibold text-gray-900">Jobs</h3>
+              <span className="isolate inline-flex rounded-md shadow-xs">
+                <button
+                  type="button"
+                  className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-lime-500 focus:z-10"
+                >
+                  Create
+                </button>
+                <Link to={`/${company_id}/jobs`}
+                  className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-cyan-500 focus:z-10"
+                >
+                  View
+                </Link>
+              </span>
             </div>
           </div>
+
+          <div className="rounded-br-lg rounded-bl-lg sm:rounded-bl-none group relative bg-white p-6 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-inset">
+            <div>
+              <span className="inline-flex rounded-lg p-3 ring-4 ring-white">
+                <BuildingOffice2Icon className="h-6 w-6 text-purple-700 bg-purple-50" aria-hidden="true" />
+              </span>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-base font-semibold text-gray-900">Company Profile</h3>
+              <span className="isolate inline-flex rounded-md shadow-xs">
+                <button
+                  type="button"
+                  className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-lime-500 focus:z-10"
+                >
+                  Edit
+                </button>
+                <Link to={`/${company_id}/profile`}
+                  className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-cyan-500 focus:z-10"
+                >
+                  View
+                </Link>
+              </span>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5" />
+          <Modal isOpen={open} onClose={() => setOpen(false)}>
+            <div></div>
+          </Modal>
         </div>
-        <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5 lg:rounded-bl-[2rem]" />
-      </div>
-      <div className="relative lg:col-span-3">
-        <div className="absolute inset-px rounded-lg bg-white" />
-        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
-          <div className="p-10 pt-4">
-            <Link to={`/${company_id}/jobs`} className="rounded-md bg-slate-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-lime-500 inline-block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-              View Jobs
-            </Link>
-        </div>
-        <div className="pointer-events-none absolute inset-px rounded-lg ring-1 shadow-sm ring-black/5" />
-        <Modal isOpen={open} onClose={() => setOpen(false)}>
-          <div></div>
-        </Modal>
       </div>
     </div>
-  </div>
-  );
+  )
 }
 
 export default Employer;
