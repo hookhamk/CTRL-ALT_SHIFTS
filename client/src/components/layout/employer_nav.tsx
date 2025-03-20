@@ -15,7 +15,7 @@ export default function EmployerNavbar() {
                             className="w-24 h-auto object-contain"
                         />
                     </div>
-                    <div className="hidden sm:ml-6 sm:block">
+                    <div className="sm:ml-6 sm:block">
                         <div className="flex flex-wrap space-x-4">
                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                             <a href={`/${company_id}/schedule`} className="rounded-md px-3 py-2 text-sm font-medium text-yellow-50 hover:bg-slate-700 hover:text-white">

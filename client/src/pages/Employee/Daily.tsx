@@ -298,7 +298,7 @@ const schedulesData = useMemo<FormattedSchedule[]>(() => {
             </button>
           </div>
           
-          <div className="grid grid-cols-7 text-xs text-gray-500 mb-1">
+          <div className="grid grid-cols-7 text-xs text-gray-500 mb-1 overflow-auto">
             <div>S</div>
             <div>M</div>
             <div>T</div>
